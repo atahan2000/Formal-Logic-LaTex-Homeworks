@@ -1,0 +1,365 @@
+w\documentclass[12pt]{article}
+\usepackage[margin=5cm]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts, fancyhdr, color, comment, graphicx, environ}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage[shortlabels]{enumitem}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{tensor}
+
+\usepackage{logicproof}
+
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\usepackage{tikz-cd}
+\tikzset{ampersand replacement = \&}
+\pagestyle{fancy}
+
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+            
+    
+
+\newenvironment{problem}[2][Problem]
+    { \begin{mdframed}[backgroundcolor=gray!20] \textbf{#1 #2} \\}
+    {  \end{mdframed}}
+
+\newenvironment{solution}
+    {{\textbf{Solution}}}
+
+\def\boxit#1#2{%
+    \smash{\color{red}\fboxrule=1pt\relax\fboxsep=2pt\relax%
+    \llap{\rlap{\fbox{\phantom{\rule{#1}{#2}}}}~}}\ignorespaces
+}
+
+\newcommand\LL[1]{\multicolumn{1}{|c}{#1}}
+\newcommand\RR[1]{\multicolumn{1}{c|}{#1}}
+\newcommand\LR[1]{\multicolumn{1}{|c|}{#1}}
+% \cline{2-7}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikzpagenodes}
+\usetikzlibrary{calc}
+
+\makeatletter
+\tikzset{%
+  remember picture with id/.style={%
+    remember picture,
+    overlay,
+    save picture id=#1,
+  },
+  save picture id/.code={%
+    \edef\pgf@temp{#1}%
+    \immediate\write\pgfutil@auxout{%
+      \noexpand\savepointas{\pgf@temp}{\pgfpictureid}}%
+  },
+  if picture id/.code args={#1#2#3}{%
+    \@ifundefined{save@pt@#1}{%
+      \pgfkeysalso{#3}%
+    }{
+      \pgfkeysalso{#2}%
+    }
+  }
+}
+
+\def\savepointas#1#2{%
+  \expandafter\gdef\csname save@pt@#1\endcsname{#2}%
+}
+
+\def\tmk@labeldef#1,#2\@nil{%
+  \def\tmk@label{#1}%
+  \def\tmk@def{#2}%
+}
+
+\tikzdeclarecoordinatesystem{pic}{%
+  \pgfutil@in@,{#1}%
+  \ifpgfutil@in@%
+    \tmk@labeldef#1\@nil
+  \else
+    \tmk@labeldef#1,(0pt,0pt)\@nil
+  \fi
+  \@ifundefined{save@pt@\tmk@label}{%
+    \tikz@scan@one@point\pgfutil@firstofone\tmk@def
+  }{%
+  \pgfsys@getposition{\csname save@pt@\tmk@label\endcsname}\save@orig@pic%
+  \pgfsys@getposition{\pgfpictureid}\save@this@pic%
+  \pgf@process{\pgfpointorigin\save@this@pic}%
+  \pgf@xa=\pgf@x
+  \pgf@ya=\pgf@y
+  \pgf@process{\pgfpointorigin\save@orig@pic}%
+  \advance\pgf@x by -\pgf@xa
+  \advance\pgf@y by -\pgf@ya
+  }%
+}
+\newcommand\tikzmark[2][]{%
+\tikz[remember picture with \usepackage{logicproof}
+id=#2] #1;}
+\makeatother
+
+\newcommand\BoxedText[3][]{%
+\begin{tikzpicture}[remember picture,overlay]
+\draw[#1] 
+  let \p1=(pic cs:#2), \p2=(pic cs:#3) in
+  ([yshift=-0.8ex]\p1) --
+  ([yshift=2ex]\p1) -- 
+  ([xshift=3pt,yshift=2ex]\p1-|current page text area.east) -- 
+  ([xshift=3pt,yshift=2ex]\p2-|current page text area.east) --
+  ([yshift=2ex]\p2) --
+  ([yshift=-0.8ex]\p2) --
+  ([xshift=-3pt,yshift=-0.8ex]\p2-|current page text area.west) --
+  ([xshift=-3pt,yshift=-0.8ex]\p1-|current page text area.west) --
+  cycle
+;
+\end{tikzpicture}%
+}
+
+\newcommand{\gradientbox}[2]{%
+    \BoxedText[draw=orange!70!black,right color=orange!10,left color=orange!50]     {start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\shadedbox}[2]{%
+    \BoxedText[draw=cyan!70!black,fill=cyan!30,ultra thick]{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\outlinebox}[2]{%
+    \BoxedText{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\sentence}[4]{$^{\circled{#2}}${\BoxedText[draw=#3!70!black,fill=#3!15,thick]{start#1}{end#1}
+    \tikzmark{start#1}#4
+    \tikzmark{end#1}}}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\newcommand{\indicator}[1]{%
+  \tikz[baseline=(char.base)]\node[anchor=south west, draw,rectangle, rounded corners, inner sep=2pt, minimum size=6mm,
+    text height=2mm](char){\textbf{#1}} ;}
+
+
+
+
+
+
+\newcommand{\ptext}[1]{\parbox{.9\textwidth}{#1}}
+
+\newcommand{\wff}
+{Well Formed Formula }
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lhead{PHIL131.01 \\ Assignment-8}
+\rhead{Atahan \\ Haznedar} 
+\chead{05318867572 \\\textbf{2021107075}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+    \section*{Chapter 6}
+    \paragraph{I}
+    Formalize the following English sentences, using the interpretation given below. (The last five require the  identity predicate.) \\[2pt]
+        \begin{tabular}{c |l}
+             \emph{Symbol} & \emph{Interpretation} \\ \hline
+             Names & \\
+             \emph{a} & Al \\
+             \emph{b} & Beth \\
+             \emph{f} & fame \\
+             \emph{m} & money \\
+             & \\
+             One-Place Predicates & \\
+             \emph{F} & is famous \\
+             \emph{G} & is greedy \\
+             \emph{H} & is a human being \\
+             Two-Place Predicate & \\
+             \emph{L} & likes \\
+             Three-Place Predicate & \\
+             \emph{P} & prefers...to
+        \end{tabular}
+    
+    
+    
+    
+    
+    \begin{problem}{(1)}
+        Both Al and Beth like money. 
+    \end{problem}
+    
+    \begin{solution}
+         $L_{am}\&L_{bm}$
+    \end{solution}
+    
+    \begin{problem}{(2)}
+        Neither Al nor Beth is famous.     
+    \end{problem}
+    
+    \begin{solution}
+        $\sim F_a \&\sim F_b$
+    \end{solution}
+    
+    
+    \begin{problem}{(3)}
+        Al likes both fame and money.     
+    \end{problem}
+    
+    \begin{solution}
+        $L_{af}\&L_{am}$
+    \end{solution}
+    
+    \begin{problem}{(4)}
+        Beth prefers fame to money.    
+    \end{problem}
+    
+    
+    \begin{solution}
+        $P_{bfm}$
+    \end{solution}
+    
+    \begin{problem}{(6)}
+        Beth prefers something to Al.   
+    \end{problem}
+    
+    \begin{solution}
+        $\exists x P_{bxa}$
+    \end{solution}
+    
+    \begin{problem}{(7)}
+        Al prefers nothing to Beth.         
+    \end{problem}
+    
+    \begin{solution}
+        $\sim \exists P_{axb}$
+    \end{solution}
+    
+    \begin{problem}{(8)}
+        Some humans are both greedy and famous.        
+    \end{problem}
+    
+    \begin{solution}
+        $\exists G_x \& F_x \& H_x$
+    \end{solution}
+    
+    \begin{problem}{(9)}
+        Anything which is greedy likes money.       
+    \end{problem}
+    
+    \begin{solution}
+        $\forall x G_x \rightarrow L_{xm}$
+    \end{solution}
+    
+    \begin{problem}{(11)}
+        If Al and Beth are greedy, then a greedy human being exists. 
+    \end{problem}
+    
+    \begin{solution}
+        $(G_a \& G_b) \rightarrow (\exists x G_x \& H_x)$
+    \end{solution}
+    
+    \begin{problem}{(12)}
+        Beth likes every human being. 
+    \end{problem}
+    
+    \begin{solution}
+        $\forall x H_x \rightarrow L_{bx}$
+    \end{solution}
+    
+    \begin{problem}{(13)}
+        Something does not like itself.        
+    \end{problem}
+    
+    \begin{solution}
+        $\exists x \sim L_{xx}$
+    \end{solution}
+    
+    
+    \begin{problem}{(14)}
+        Something does not like something.       
+    \end{problem}
+    
+    \begin{solution}
+        $\exists x \exists y \sim L_{xy}$
+    \end{solution}
+    
+    \begin{problem}{(16)}
+        No human being likes everything.     
+    \end{problem}
+ 
+    \begin{solution}
+        $\sim \exists x (H_x \& \forall y L_{xy})$
+    \end{solution}
+     
+    \begin{problem}{(17)}
+        Al likes every human being who likes him.     
+    \end{problem}
+    
+    \begin{solution}
+        $\forall x (H_x \& L_{xa}) \rightarrow L_{ax}$
+    \end{solution}
+    
+    \begin{problem}{(18)}
+        Some of the famous like themselves.         
+    \end{problem}
+    
+    \begin{solution}
+        $\exists x Fx \& L_{xx} $
+    \end{solution}
+    
+    \begin{problem}{(19)}
+        The famous do not all like themselves.        
+    \end{problem}
+    
+    \begin{solution}
+        I interpreted it as "Not all famouses like themselves." $$\exists x F_x \& \sim L_{xx}$$
+    \end{solution}
+    
+    \begin{problem}{(21)}
+        If Al is greedy and Beth is not, then Al and Beth are not identical.         
+    \end{problem}
+    
+    \begin{solution}
+        $(G_a \& \sim G_b) \rightarrow \sim (a =b)$
+    \end{solution}
+    
+    \begin{problem}{(22)}
+        Beth likes everything except Al.         
+    \end{problem}
+    
+    \begin{solution}
+        $\forall x \sim(x = a) \rightarrow L_{bx}$
+    \end{solution}
+    
+    \begin{problem}{(23)}
+         Al is the only human being who is not greedy.        
+    \end{problem}
+    
+    \begin{solution}
+        $\forall x (H_x \& \sim (x=a)) \rightarrow G_x$
+    \end{solution}
+    
+    \begin{problem}{(24)}
+        Al prefers money to everything else.        
+    \end{problem}
+    
+    \begin{solution}
+        $\forall x \sim(x=m)\rightarrow P_{amx}$
+    \end{solution}
+    
+
+ 
+    
+    
+\end{document}

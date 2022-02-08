@@ -1,0 +1,559 @@
+\documentclass[12pt]{article}
+\usepackage[margin=5cm]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts, fancyhdr, color, comment, graphicx, environ}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage[shortlabels]{enumitem}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{tensor}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\usepackage{tikz-cd}
+\tikzset{ampersand replacement = \&}
+\pagestyle{fancy}
+
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+            
+    
+
+\newenvironment{problem}[2][Problem]
+    { \begin{mdframed}[backgroundcolor=gray!20] \textbf{#1 #2} \\}
+    {  \end{mdframed}}
+
+\newenvironment{solution}
+    {{\textbf{Solution}}}
+
+\def\boxit#1#2{%
+    \smash{\color{red}\fboxrule=1pt\relax\fboxsep=2pt\relax%
+    \llap{\rlap{\fbox{\phantom{\rule{#1}{#2}}}}~}}\ignorespaces
+}
+
+\newcommand\LL[1]{\multicolumn{1}{|c}{#1}}
+\newcommand\RR[1]{\multicolumn{1}{c|}{#1}}
+\newcommand\LR[1]{\multicolumn{1}{|c|}{#1}}
+% \cline{2-7}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikzpagenodes}
+\usetikzlibrary{calc}
+
+\makeatletter
+\tikzset{%
+  remember picture with id/.style={%
+    remember picture,
+    overlay,
+    save picture id=#1,
+  },
+  save picture id/.code={%
+    \edef\pgf@temp{#1}%
+    \immediate\write\pgfutil@auxout{%
+      \noexpand\savepointas{\pgf@temp}{\pgfpictureid}}%
+  },
+  if picture id/.code args={#1#2#3}{%
+    \@ifundefined{save@pt@#1}{%
+      \pgfkeysalso{#3}%
+    }{
+      \pgfkeysalso{#2}%
+    }
+  }
+}
+
+\def\savepointas#1#2{%
+  \expandafter\gdef\csname save@pt@#1\endcsname{#2}%
+}
+
+\def\tmk@labeldef#1,#2\@nil{%
+  \def\tmk@label{#1}%
+  \def\tmk@def{#2}%
+}
+
+\tikzdeclarecoordinatesystem{pic}{%
+  \pgfutil@in@,{#1}%
+  \ifpgfutil@in@%
+    \tmk@labeldef#1\@nil
+  \else
+    \tmk@labeldef#1,(0pt,0pt)\@nil
+  \fi
+  \@ifundefined{save@pt@\tmk@label}{%
+    \tikz@scan@one@point\pgfutil@firstofone\tmk@def
+  }{%
+  \pgfsys@getposition{\csname save@pt@\tmk@label\endcsname}\save@orig@pic%
+  \pgfsys@getposition{\pgfpictureid}\save@this@pic%
+  \pgf@process{\pgfpointorigin\save@this@pic}%
+  \pgf@xa=\pgf@x
+  \pgf@ya=\pgf@y
+  \pgf@process{\pgfpointorigin\save@orig@pic}%
+  \advance\pgf@x by -\pgf@xa
+  \advance\pgf@y by -\pgf@ya
+  }%
+}
+\newcommand\tikzmark[2][]{%
+\tikz[remember picture with id=#2] #1;}
+\makeatother
+
+\newcommand\BoxedText[3][]{%
+\begin{tikzpicture}[remember picture,overlay]
+\draw[#1] 
+  let \p1=(pic cs:#2), \p2=(pic cs:#3) in
+  ([yshift=-0.8ex]\p1) --
+  ([yshift=2ex]\p1) -- 
+  ([xshift=3pt,yshift=2ex]\p1-|current page text area.east) -- 
+  ([xshift=3pt,yshift=2ex]\p2-|current page text area.east) --
+  ([yshift=2ex]\p2) --
+  ([yshift=-0.8ex]\p2) --
+  ([xshift=-3pt,yshift=-0.8ex]\p2-|current page text area.west) --
+  ([xshift=-3pt,yshift=-0.8ex]\p1-|current page text area.west) --
+  cycle
+;
+\end{tikzpicture}%
+}
+
+\newcommand{\gradientbox}[2]{%
+    \BoxedText[draw=orange!70!black,right color=orange!10,left color=orange!50]     {start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\shadedbox}[2]{%
+    \BoxedText[draw=cyan!70!black,fill=cyan!30,ultra thick]{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\outlinebox}[2]{%
+    \BoxedText{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\sentence}[4]{$^{\circled{#2}}${\BoxedText[draw=#3!70!black,fill=#3!15,thick]{start#1}{end#1}
+    \tikzmark{start#1}#4
+    \tikzmark{end#1}}}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\newcommand{\indicator}[1]{%
+  \tikz[baseline=(char.base)]\node[anchor=south west, draw,rectangle, rounded corners, inner sep=2pt, minimum size=6mm,
+    text height=2mm](char){\textbf{#1}} ;}
+
+
+\newcommand{\ptext}[1]{\parbox{.9\textwidth}{#1}}
+
+\newcommand{\wff}
+{Well Formed Formula }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lhead{PHIL131.01 \\ Assignment-1}
+\rhead{Atahan \\ Haznedar} 
+\chead{\textbf{2021107075}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+    \section*{Chapter 3}
+    \paragraph{I.}
+    Formalize the following statements, using the interpretation indicated below: \\
+    
+    \begin{tabular}{|l | l|}
+    \hline
+        Sentence Letter & Interpretation \\ \hline
+        P & Pam is going \\
+        Q & Quincy is going. \\
+        R & Richard is going. \\
+        S & Sara is going. \\ \hline
+    \end{tabular}
+    
+    \begin{problem}{(1)}
+        Pam is not going.
+    \end{problem}
+    \begin{solution}
+        $\sim P$
+    \end{solution}
+    \begin{problem}{(2)}
+        Pam is going, but Quincy is not.
+    \end{problem}
+    \begin{solution}
+        $(P \land \sim Q)$
+    \end{solution}
+    \begin{problem}{(3)}
+        If Pam is going, then so is Quincy.
+    \end{problem}
+    \begin{solution}
+        $(P \Rightarrow Q)$
+    \end{solution}
+    \begin{problem}{(4)}
+        Pam is going if Quincy is.
+    \end{problem}
+    \begin{solution}
+        $(Q \Rightarrow P)$
+    \end{solution}
+    \begin{problem}{(5)}
+        Pam is going only if Quincy is.
+    \end{problem}
+    \begin{solution}
+        $(Q \iff P)$
+    \end{solution}
+    \begin{problem}{(6)}
+        Pam is going if and only if Quincy is.
+    \end{problem}
+    \begin{solution}
+        $(P \iff Q)$
+    \end{solution}
+    \begin{problem}{(7)}
+        Neither Pam nor Quincy is going.
+    \end{problem}
+    \begin{solution}
+        $(\sim P \land  \sim Q)$
+    \end{solution}
+    \begin{problem}{(8)}
+        Pam and Quincy are not both going.
+    \end{problem}
+    \begin{solution}
+        $\sim(P \land Q)$
+    \end{solution}
+    \begin{problem}{(9)}
+        Either Pam is not going or Quincy is not going.
+    \end{problem}
+    \begin{solution}
+        $(\sim P \lor \sim Q)$
+    \end{solution}
+    \begin{problem}{(10)}
+        Pam is not going if Quincy is.
+    \end{problem}
+    \begin{solution}
+        $(Q \Rightarrow \sim P)$
+    \end{solution}
+    \begin{problem}{(11)}
+        Either Pam is going, or Richard and Quincy are going.
+    \end{problem}
+    \begin{solution}
+        $(P \lor (R \land Q))$
+    \end{solution}
+    \begin{problem}{(12)}
+        If Pam is going, then both Richard and Quincy are going.
+    \end{problem}
+    \begin{solution}
+        $(P \Rightarrow (R \land Q))$
+    \end{solution}
+    \begin{problem}{(13)}
+        Pam is staying, but Richard and Quincy are going.
+    \end{problem}
+    \begin{solution}
+        $(\sim P \land (R \land Q))$
+    \end{solution}
+    \begin{problem}{(14)}
+        If Richard is going, then if Pam is staying, Quincy is going.
+    \end{problem}
+    \begin{solution}
+        $(R \Rightarrow (\sim P \Rightarrow Q))$
+    \end{solution} 
+    \begin{problem}{(15)}
+        If neither Richard nor Quincy is going, then Pam is going.
+    \end{problem}
+    \begin{solution}
+        $((\sim R \& \sim Q) \Rightarrow P)$
+    \end{solution}
+    \begin{problem}{(16)}
+        Richard is going only if Pam and Quincy are staying.
+    \end{problem}
+    \begin{solution}
+        $(R \iff (\sim P \land \sim Q ))$
+    \end{solution}
+    \begin{problem}{(17)}
+        Richard and Quincy are going, although Pam and Sara are staying.
+    \end{problem}
+    \begin{solution}
+        $((R \land Q) \land (\sim P \land \sim S))$
+    \end{solution}
+    \begin{problem}{(18)}
+        If either Richard or Quincy is going, then Pam is going and Sara is staying.
+    \end{problem}
+    \begin{solution}
+        $((R \lor Q) \Rightarrow (P \land \sim S))$
+    \end{solution}
+    \begin{problem}{(19)}
+        Richard and Quincy are going if and only if either Pam or Sara is going.
+    \end{problem}
+    \begin{solution}
+        $((R \land Q) \iff (P \lor S))$
+    \end{solution}
+    \begin{problem}{(20)}
+        If Sara is going, then either Richard or Pam is going, and if Sara is not going, then both Pam and Quincy are going.
+    \end{problem}
+    \begin{solution}
+        $((S \Rightarrow (R \lor P)) \land  (\sim S \Rightarrow (P \land Q)))$
+    \end{solution}
+    
+\paragraph{II.}
+Determine which of the following formulas are \wff and which are not. Explain your solution. \\
+
+{\bf Formation Rules of \wff}
+    \begin{enumerate}
+        \item Any sentence letter is a \wff
+        \item If $\phi$ is a \wff, then so is $\sim\phi$
+        \item If $\phi$ and $\psi$ are \wff's, then so are $(\phi \& \psi)$, $(\phi \lor \psi)$,$(\phi \Rightarrow \psi)$, $(\phi \iff \psi)$
+    \end{enumerate}    
+    
+    \begin{problem}{(1)}
+        $\sim(\sim P)$
+    \end{problem}
+    
+    \begin{solution}
+        Its not a \wff since, there is no need to put 'paranthesis' after '$\sim$'(Negation)
+    \end{solution}
+    
+    \begin{problem}{(2)}
+        $P \sim Q$
+    \end{problem}
+    
+    \begin{solution}
+        Its not a \wff since, '$\sim$' is an unary operation.
+    \end{solution}
+    
+    \begin{problem}{(3)}
+        $(P \Rightarrow P)$
+    \end{problem}
+    
+    \begin{solution}
+        Its a \wff.
+    \end{solution}
+    
+    \begin{problem}{(4)}
+        $P \Rightarrow P$ 
+    \end{problem}
+    
+    \begin{solution}
+        Its not a \wff since it omits the 3rd law of 'Rules of Formation'. There should be paranthesis in both ends.
+    \end{solution}
+    
+    \begin{problem}{(5)}
+        $\sim \sim \sim (\sim P \& Q)$
+    \end{problem}
+    
+    \begin{solution}
+        It is a \wff.
+    \end{solution}
+    
+    \begin{problem}{(6)}
+        $(( P \Rightarrow Q))$
+    \end{problem}
+    
+    \begin{solution}
+        It is not a \wff since it omits the 3rd law of 'Rules of Formation'. The outer paranthesis shouldn't have placed there.
+    \end{solution}
+    
+    \begin{problem}{(7)}
+        $\sim (P \& Q) \& \sim R$
+    \end{problem}
+    
+    \begin{solution}
+        It is not a \wff since it omits the 3rd law of 'Rules of Formation'. There should be another paranthesis both at the end and at the beginning.
+    \end{solution}
+    
+    \begin{problem}{(8)}
+        $(P \iff (P \iff (P \iff P)))$
+    \end{problem}
+    
+    \begin{solution}
+        It is a \wff.
+    \end{solution}
+    
+    \begin{problem}{(9)}
+        $(P \Rightarrow (Q \Rightarrow (R \& S))$
+    \end{problem}
+    
+    \begin{solution}
+        It is not a \wff since it omits the 3rd law of 'Rules of Formation'. There should be another paranthes at the end.
+    \end{solution}
+    
+    \begin{problem}{(10)}
+        $(P \Rightarrow (Q \lor R \lor S))$
+    \end{problem}
+    
+    \begin{solution}
+        It is not a \wff since it omits the 3rd law of 'Rules of Formation'. It should have been written as $$ (P \Rightarrow ((Q \lor R) \lor (R \lor S)))$$
+    \end{solution}
+
+\paragraph{III.}
+Determine whether the following formulas are tautologous, truth-functionally contingent, or inconsistent, using either truth tables or refutation trees.
+
+\begin{problem}{(1)}
+    $P \Rightarrow P$
+\end{problem}
+
+\begin{solution}
+    It is a Tautology.
+    \begin{center}
+        \begin{tabular}{c|c c c}
+            P & (P & $\Rightarrow$ & P) \\ \hline
+            T & T & \LR{T} & T \\
+            F & F & \LR{T} & F \\ \cline{3-3}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\begin{problem}{(2)}
+    $P \Rightarrow \sim P$
+\end{problem}
+
+\begin{solution}
+It is a contingent formula.
+    \begin{center}
+        \begin{tabular}{c|c c c c}
+            P & (P & $\Rightarrow$ & $ \sim$ & P) \\ \hline
+            T & T & \LR{F} & F & T \\
+            F & F & \LR{T} & T & F \\ \cline{3-3}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\begin{problem}{(3)}
+    $\sim(P \Rightarrow P)$
+\end{problem}
+
+\begin{solution}
+    It is inconsistent.
+    \begin{center}
+        \begin{tabular}{c|c c c c}
+            P & $\sim$ &(P & $\Rightarrow$ &  P) \\ \hline
+            T & \LR{F} & T & T & T \\
+            F & \LR{F} & F & T & F \\  \cline{2-2}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\begin{problem}{(4)}
+    $P \Rightarrow Q$
+\end{problem}
+
+\begin{solution}
+    It is a Tautology.
+    \begin{center}
+        \begin{tabular}{c c|c c c}
+            P & Q &(P & $\Rightarrow$ & Q) \\ \hline
+            T & T & T & \LR{T} & T \\
+            F & F & T & \LR{T} & F \\
+            F & T & F & \LR{T} & T \\
+            F & F & F & \LR{T} & F \\ \cline{4-4}
+        \end{tabular} 
+    \end{center}
+\end{solution}
+
+
+\begin{problem}{(5)}
+    $(P \lor Q) \Rightarrow P$
+\end{problem}
+
+\begin{solution}
+    It is contingent formula.
+    \begin{center}
+        \begin{tabular}{c c|c c c c c}
+            P & Q &(P & $\lor$ & Q) & $\Rightarrow$ & P \\ \hline
+            T & T & T & T & T & \LR{T} & T \\
+            T & F & T & T & F & \LR{T} & T \\
+            F & T & F & T & T & \LR{F} & F \\
+            F & F & F & F & F & \LR{T} & F \\ \cline{6-6}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\begin{problem}{(6)}
+    $(P \& Q) \Rightarrow P$
+\end{problem}
+
+\begin{solution}
+    It is a tautology.
+    \begin{center}
+        \begin{tabular}{c c|c c c c c}
+            P & Q &(P & $\&$ & Q) & $\Rightarrow$ & P \\ \hline
+            T & T & T & T & T & \LR{T} & T \\
+            T & F & T & F & F & \LR{T} & T \\
+            F & T & F & F & T & \LR{T} & F \\
+            F & F & F & F & F & \LR{T} & F \\ \cline{6-6}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\begin{problem}{(7)}
+    $P \iff \sim(P \lor Q)$
+\end{problem}
+
+\begin{solution}
+    It is a contingent formula.
+    \begin{center}
+        \begin{tabular}{c c|c c c c c c}
+            P & Q & P & $\iff$ & $\sim$( & P & $\lor$ & Q) \\ \hline
+            T & T & T & \LR{F} & F & T & T & T \\
+            T & F & T & \LR{F} & F & T & T & F\\
+            F & T & F & \LR{T} & F & F & T & T\\
+            F & F & F & \LR{F} & T & F & F & F\\ \cline{4-4}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\begin{problem}{(8)}
+    $\sim ((P \& Q) \iff (P \lor Q))$
+\end{problem}
+
+\begin{solution}
+    It is a contingent formula.
+    \begin{center}
+        \begin{tabular}{c c|c c c c c c c c}
+            P & Q & $\sim$ & ((P & \& & Q) & $\iff$ & (P & $\lor$ & Q))) \\ \hline
+            T & T & \LR{F} & T & T & T & T & T & T & T \\
+            T & F & \LR{T} & T & F & F & F & T & T & F\\
+            F & T & \LR{T} & F & F & T & F & F & T & T\\
+            F & F & \LR{F} & F & F & F & T & F & F & F\\ \cline{3-3}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\begin{problem}{(9)}
+    $(P \& Q) \& \sim(P \lor R)$
+\end{problem}
+
+\begin{solution}
+    It is inconsistent.
+    \begin{center}
+        \begin{tabular}{c c c|c c c c c c c c}
+            P & Q & R & (P & \& & Q) & \& & $\sim$( & P & $\lor$ & R) \\ \hline
+            T & T & T & T & T & T & \LR{F} & F & T & T & T \\
+            T & T & F & T & T & T & \LR{F} & F & T & T & F\\
+            T & F & T & T & F & F & \LR{F} & F & T & T & T\\
+            T & F & F & T & F & F & \LR{F} & F & T & T & F\\
+            F & T & T & F & F & T & \LR{F} & F & F & T & T\\
+            F & T & F & F & F & T & \LR{F} & T & F & F & F\\
+            F & F & T & F & F & F & \LR{F} & F & F & T & T\\
+            F & F & F & F & F & F & \LR{F} & T & F & F & F\\ \cline{7-7}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\begin{problem}{(10)}
+    $(P \Rightarrow (Q \& R)) \Rightarrow (P \Rightarrow R)$
+\end{problem}
+
+\begin{solution}
+    It is a tautology.
+    \begin{center}
+        \begin{tabular}{c c c|c c c c c c c c c}
+            P & Q & R & (P & $\Rightarrow$ & (Q & \& & R)) & $\Rightarrow$ & (P & $\Rightarrow$ & R) \\ \hline
+            T & T & T & T & T & T & T & T & \LR{T} & T & T & T\\
+            T & T & F & T & F & T & F & F & \LR{T} & T & F & F\\
+            T & F & T & T & F & F & F & T & \LR{T} & T & T & T\\
+            T & F & F & T & F & F & F & F & \LR{T} & T & F & F\\
+            F & T & T & F & T & T & T & T & \LR{T} & F & T & T\\
+            F & T & F & F & T & T & F & F & \LR{T} & F & T & T\\
+            F & F & T & F & T & F & F & T & \LR{T} & F & T & T\\
+            F & F & F & F & T & F & F & F & \LR{T} & F & T & F\\ \cline{9-9}
+        \end{tabular}
+    \end{center}
+\end{solution}
+
+\end{document}

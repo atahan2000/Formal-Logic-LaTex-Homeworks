@@ -1,0 +1,313 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Do not alter this block (unless you're familiar with LaTeX
+\documentclass[12pt]{article}
+\usepackage[margin=5cm]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts, fancyhdr, color, comment, graphicx, environ}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage[shortlabels]{enumitem}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{tensor}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\usepackage{tikz-cd}
+\tikzset{ampersand replacement = \&}
+\pagestyle{fancy}
+
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+            
+    
+
+\newenvironment{problem}[2][Problem]
+    { \begin{mdframed}[backgroundcolor=gray!20] \textbf{#1 #2} \\}
+    {  \end{mdframed}}
+
+% Define solution environment
+\newenvironment{solution}
+    {{\textbf{Solution}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikzpagenodes}
+\usetikzlibrary{calc}
+
+\makeatletter
+\tikzset{%
+  remember picture with id/.style={%
+    remember picture,
+    overlay,
+    save picture id=#1,
+  },
+  save picture id/.code={%
+    \edef\pgf@temp{#1}%
+    \immediate\write\pgfutil@auxout{%
+      \noexpand\savepointas{\pgf@temp}{\pgfpictureid}}%
+  },
+  if picture id/.code args={#1#2#3}{%
+    \@ifundefined{save@pt@#1}{%
+      \pgfkeysalso{#3}%
+    }{
+      \pgfkeysalso{#2}%
+    }
+  }
+}
+
+\def\savepointas#1#2{%
+  \expandafter\gdef\csname save@pt@#1\endcsname{#2}%
+}
+
+\def\tmk@labeldef#1,#2\@nil{%
+  \def\tmk@label{#1}%
+  \def\tmk@def{#2}%
+}
+
+\tikzdeclarecoordinatesystem{pic}{%
+  \pgfutil@in@,{#1}%
+  \ifpgfutil@in@%
+    \tmk@labeldef#1\@nil
+  \else
+    \tmk@labeldef#1,(0pt,0pt)\@nil
+  \fi
+  \@ifundefined{save@pt@\tmk@label}{%
+    \tikz@scan@one@point\pgfutil@firstofone\tmk@def
+  }{%
+  \pgfsys@getposition{\csname save@pt@\tmk@label\endcsname}\save@orig@pic%
+  \pgfsys@getposition{\pgfpictureid}\save@this@pic%
+  \pgf@process{\pgfpointorigin\save@this@pic}%
+  \pgf@xa=\pgf@x
+  \pgf@ya=\pgf@y
+  \pgf@process{\pgfpointorigin\save@orig@pic}%
+  \advance\pgf@x by -\pgf@xa
+  \advance\pgf@y by -\pgf@ya
+  }%
+}
+\newcommand\tikzmark[2][]{%
+\tikz[remember picture with id=#2] #1;}
+\makeatother
+
+\newcommand\BoxedText[3][]{%
+\begin{tikzpicture}[remember picture,overlay]
+\draw[#1] 
+  let \p1=(pic cs:#2), \p2=(pic cs:#3) in
+  ([yshift=-0.8ex]\p1) --
+  ([yshift=2ex]\p1) -- 
+  ([xshift=3pt,yshift=2ex]\p1-|current page text area.east) -- 
+  ([xshift=3pt,yshift=2ex]\p2-|current page text area.east) --
+  ([yshift=2ex]\p2) --
+  ([yshift=-0.8ex]\p2) --
+  ([xshift=-3pt,yshift=-0.8ex]\p2-|current page text area.west) --
+  ([xshift=-3pt,yshift=-0.8ex]\p1-|current page text area.west) --
+  cycle
+;
+\end{tikzpicture}%
+}
+
+\newcommand{\gradientbox}[2]{%
+    \BoxedText[draw=orange!70!black,right color=orange!10,left color=orange!50]     {start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\shadedbox}[2]{%
+    \BoxedText[draw=cyan!70!black,fill=cyan!30,ultra thick]{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\outlinebox}[2]{%
+    \BoxedText{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\sentence}[4]{$^{\circled{#2}}${\BoxedText[draw=#3!70!black,fill=#3!15,thick]{start#1}{end#1}
+    \tikzmark{start#1}#4
+    \tikzmark{end#1}}}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\newcommand{\indicator}[1]{%
+  \tikz[baseline=(char.base)]\node[anchor=south west, draw,rectangle, rounded corners, inner sep=2pt, minimum size=6mm,
+    text height=2mm](char){\textbf{#1}} ;}
+
+
+\newcommand{\ptext}[1]{\parbox{.9\textwidth}{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Fill in the appropriate information below
+\lhead{PHIL131.01 \\ Assignment-1}
+\rhead{Atahan \\ Haznedar} 
+\chead{\textbf{2021107075}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+    \section*{Chapter 2}
+    \subsection*{I.}
+    
+    \begin{problem}{6}
+        \begin{tabular}{ll}
+            {}& Most Americans like hamburgers \\
+            {}& Joe is American \\
+        $\therefore$ & Joe likes hamburgers. \\
+        \end{tabular}
+    \end{problem}
+
+    
+    \begin{solution}
+        It is a highly inductive argument.
+    \end{solution}
+
+    \begin{problem}{11} \\[0.2pt]
+        \begin{tabular}{ll}
+            {} & \parbox{.9\textwidth}{If either Nation A or Nation B launches a nuclear attack, it will lead to massive destruction.}\\
+            {} & Neither side wants this destruction.\\  
+            $\therefore$ & Neither side will launch a nuclear attack.\\
+        \end{tabular}
+    \end{problem}
+    
+    \begin{solution}
+        It is a deductive argument.
+    \end{solution}
+    
+    \begin{problem}{27}
+        \begin{tabular}{ll}
+            & God made the universe. \\
+            & God is perfectly good. \\
+            & \parbox{.9\textwidth}{Whatever is made by a perfectly good being is perfectly good.} \\
+            & Whatever is perfectly good contains no evil.\\ 
+            $\therefore$  & The universe contains no evil.\\
+              
+        \end{tabular}
+    \end{problem}
+
+    \begin{solution}
+        It is a deductive argument.
+    \end{solution}
+
+    \begin{problem}{29}
+        \begin{tabular}{ll}
+            & \parbox{.9\textwidth}{Jody has a high fever, purple splotches on her tongue, and severe headaches, but no other symptoms.} \\
+            & Jeff has the same set of symptoms, and no others.\\  
+            $\therefore$ & Jody and Jeff have the same disease.\\
+        \end{tabular}
+    \end{problem}
+    
+    \begin{solution}
+        Since there might be another disease with same symptoms it is weakly inductive argument.
+    \end{solution}
+
+
+\subsection*{II.}
+
+    \begin{problem}{6}
+        Since habitual overeating contributes to several debilitating diseases, it can contribute to the 
+        destruction of your health. But your health is the most important thing you have. So you should not habitually overeat.
+    \end{problem}
+    
+    \begin{solution}\\
+        \indicator{Since} \sentence{a1}{1}{cyan}{habitual overeating contributes to several debilitating diseases,} \sentence{a2}{2}{yellow}{it can contribute to the destruction of your health.} \indicator{But} \sentence{a3}{3}{green}{your health is the most important thing you have.} \sentence{a4}{4}{blue}{\indicator{So} you should not habitually overeat.}
+        
+        \paragraph{}
+            Since we don't know from the argument that debilitating diseases cause destruction of health is still probable hence it is inductive argument.
+        
+        \begin{center}
+            \begin{tikzcd}[every matrix/.append style={name=mymatr},row sep=1.5em,column sep=0.3em, execute at end picture={\draw (mymatr-1-1.south west) -- (mymatr-1-5.south east);}]
+                {1} \& {+} \& {2} \arrow{d}{\boldsymbol{I}\text{(Weak)}} \& {+} \& {3}  \\
+                {} \& {} \& {4} \& {} \& {} \\
+            \end{tikzcd}
+        \end{center}
+    \end{solution}
+\clearpage
+    \begin{problem}{10}
+        Just as without heat there would be no cold, without darkness there would be no light, and without pain there would be no pleasure, so too without death there would be no life. Thus it is clear that our individual deaths are absolutely necessary for the life of the universe as a whole. Death should therefore be a happy end toward which we go voluntarily, rather than an odious horror which we selfishly and futilely fend off with our last desperate ounce of energy.
+    \end{problem}
+    
+    \begin{solution}\\
+        \sentence{b1}{1}{green}{\indicator{Just as} without heat there would be no cold,} \sentence{b2}{2}{blue}{without darkness there would be no light,} \indicator{and} \sentence{b3}{3}{red}{without pain there would be no pleasure,} \indicator{so too} \sentence{b4}{4}{cyan}{without death there would be no life.} \indicator{Thus} \sentence{b5}{5}{magenta}{it is clear that our individual deaths are absolutely necessary for the life of the universe as a whole.} \sentence{b6}{6}{white}{Death should \indicator{therefore} be a happy end toward which we go voluntarily, rather than an odious horror which we selfishly and futilely fend off with our last desperate ounce of energy.}
+        \paragraph{}
+            Since there is no relationship for \circled{4} with \circled{1},\circled{2},\circled{3} it is irrelevant. It is therefore weakly inductive argument.
+            
+            \begin{center}
+                \begin{tikzcd}[every matrix/.append style={name=mymatr},row sep=1.5em,column sep=0.3em, execute at end picture={\draw (mymatr-1-1.south west) -- (mymatr-1-5.south east);}]
+                    {1} \& {+} \& {2}\arrow{d}{\boldsymbol{I}} \& {+} \& {3} \&  \\
+                    {} \& {} \& {4}\arrow{d}{\boldsymbol{I}} \& {} \& {}  \&\\
+                    {} \& {} \& {5}\arrow{d}{\boldsymbol{I}} \& {} \&  \&\fbox{$\boldsymbol{I}$ (weak)} \\
+                    {} \& {} \& {6} \& {} \& {} \&\\
+                \end{tikzcd}
+        \end{center}
+    \end{solution}
+\clearpage
+\subsection*{III}
+
+    \begin{problem}{2}
+        \begin{tabular}{ll}
+            & \parbox{.9\textwidth}{All my friends say that snorting a little nutmeg now and then is good for you}.\\
+            $\therefore$ &Snorting a little nutmeg now and then is good for you. \\
+        \end{tabular}
+    \end{problem}
+    
+    \begin{solution}
+        The inductive probability is less than 1. Since there is a still  a chance for friends to be wrong. Also it highly relevant to each other.
+    \end{solution}
+    
+    
+    \begin{problem}{3}
+        \begin{tabular}{ll}
+            {} & \parbox{.9\textwidth}{All my friends say that snorting a little nutmeg now and then is good for you.} \\ 
+            {} & My friends are never wrong. \\
+            $\therefore$ & \parbox{.9\textwidth}{Snorting a little nutmeg now and then is good for you.}\\
+        \end{tabular}
+    \end{problem}
+    
+    \begin{solution}
+        The inductive probability is exactly 1 since in contrast to Problem 2 there is no chance for friends to be wrong since we mentioned it. So it is deductive. Also sentences are relevant to each other.
+    \end{solution}
+
+    \begin{problem}{4}
+        \begin{tabular}{ll}
+                 {}& Mr. Plotz owns a summer home in New Hampshire. \\
+                 {}& He also owns his family residence in Washington, D.C. \\
+                 $\therefore$ & He owns at least two homes. \\
+        \end{tabular}
+    \end{problem}
+    
+    \begin{solution}
+        The inductive probability is exactly 1 since it is a deductive argument. And premises are relevant to the conclusion.   
+    \end{solution}
+
+\clearpage
+\subsection*{IV.}
+    
+    \begin{problem}{1}
+        \begin{tabular}{ll}
+            {} & \ptext{Very few presidents of the United States have been Hollywood actors.} \\ 
+            {} & Ronald Reagan was a president of the United States.\\
+            $\therefore$ & Ronald Reagan was not a Hollywood actor. \\
+        \end{tabular}
+    \end{problem}
+    
+    \begin{solution}
+        Premises are relevant to the conclusion since they mentioning the same things. It is highly inductive argument, so its inductive probability is between 0.5 and 1. Also thwew is ommision of fallacy of suppressed evidence.
+    \end{solution}
+
+    \begin{problem}{7}
+        \begin{tabular}{ll}
+            & \ptext{Without exception, all matter thus far observed has mass.} \\
+            & \ptext{There is matter in galaxies beyond the reach of our observation.}\\ 
+            $\therefore$ & \ptext{The matter in these unobserved galaxies has mass.} \\
+        \end{tabular}
+    \end{problem}
+    
+    \begin{solution}
+        It is weakly inductive, since matters that we observed so far is significantly small compared to galaxies beyond the reach of our observations. So its inductive probability is between 0 and 0.5, the matters that we didn't observed so far might not have a mass. And there is no ommittion of fallacy of suppressed evidence as well.
+    \end{solution}
+
+\end{document}

@@ -1,0 +1,339 @@
+\documentclass[12pt]{article}
+\usepackage[margin=5cm]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts, fancyhdr, color, comment, graphicx, environ}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage[shortlabels]{enumitem}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{tensor}
+
+\usepackage{logicproof}
+
+
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\usepackage{tikz-cd}
+\tikzset{ampersand replacement = \&}
+\pagestyle{fancy}
+
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+            
+    
+
+\newenvironment{problem}[2][Problem]
+    { \begin{mdframed}[backgroundcolor=gray!20] \textbf{#1 #2} \\}
+    {  \end{mdframed}}
+
+\newenvironment{solution}
+    {{\textbf{Solution}}}
+
+\def\boxit#1#2{%
+    \smash{\color{red}\fboxrule=1pt\relax\fboxsep=2pt\relax%
+    \llap{\rlap{\fbox{\phantom{\rule{#1}{#2}}}}~}}\ignorespaces
+}
+
+\newcommand\LL[1]{\multicolumn{1}{|c}{#1}}
+\newcommand\RR[1]{\multicolumn{1}{c|}{#1}}
+\newcommand\LR[1]{\multicolumn{1}{|c|}{#1}}
+% \cline{2-7}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikzpagenodes}
+\usetikzlibrary{calc}
+
+\makeatletter
+\tikzset{%
+  remember picture with id/.style={%
+    remember picture,
+    overlay,
+    save picture id=#1,
+  },
+  save picture id/.code={%
+    \edef\pgf@temp{#1}%
+    \immediate\write\pgfutil@auxout{%
+      \noexpand\savepointas{\pgf@temp}{\pgfpictureid}}%
+  },
+  if picture id/.code args={#1#2#3}{%
+    \@ifundefined{save@pt@#1}{%
+      \pgfkeysalso{#3}%
+    }{
+      \pgfkeysalso{#2}%
+    }
+  }
+}
+
+\def\savepointas#1#2{%
+  \expandafter\gdef\csname save@pt@#1\endcsname{#2}%
+}
+
+\def\tmk@labeldef#1,#2\@nil{%
+  \def\tmk@label{#1}%
+  \def\tmk@def{#2}%
+}
+
+\tikzdeclarecoordinatesystem{pic}{%
+  \pgfutil@in@,{#1}%
+  \ifpgfutil@in@%
+    \tmk@labeldef#1\@nil
+  \else
+    \tmk@labeldef#1,(0pt,0pt)\@nil
+  \fi
+  \@ifundefined{save@pt@\tmk@label}{%
+    \tikz@scan@one@point\pgfutil@firstofone\tmk@def
+  }{%
+  \pgfsys@getposition{\csname save@pt@\tmk@label\endcsname}\save@orig@pic%
+  \pgfsys@getposition{\pgfpictureid}\save@this@pic%
+  \pgf@process{\pgfpointorigin\save@this@pic}%
+  \pgf@xa=\pgf@x
+  \pgf@ya=\pgf@y
+  \pgf@process{\pgfpointorigin\save@orig@pic}%
+  \advance\pgf@x by -\pgf@xa
+  \advance\pgf@y by -\pgf@ya
+  }%
+}
+\newcommand\tikzmark[2][]{%
+\tikz[remember picture with \usepackage{logicproof}
+id=#2] #1;}
+\makeatother
+
+\newcommand\BoxedText[3][]{%
+\begin{tikzpicture}[remember picture,overlay]
+\draw[#1] 
+  let \p1=(pic cs:#2), \p2=(pic cs:#3) in
+  ([yshift=-0.8ex]\p1) --
+  ([yshift=2ex]\p1) -- 
+  ([xshift=3pt,yshift=2ex]\p1-|current page text area.east) -- 
+  ([xshift=3pt,yshift=2ex]\p2-|current page text area.east) --
+  ([yshift=2ex]\p2) --
+  ([yshift=-0.8ex]\p2) --
+  ([xshift=-3pt,yshift=-0.8ex]\p2-|current page text area.west) --
+  ([xshift=-3pt,yshift=-0.8ex]\p1-|current page text area.west) --
+  cycle
+;
+\end{tikzpicture}%
+}
+
+\newcommand{\gradientbox}[2]{%
+    \BoxedText[draw=orange!70!black,right color=orange!10,left color=orange!50]     {start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\shadedbox}[2]{%
+    \BoxedText[draw=cyan!70!black,fill=cyan!30,ultra thick]{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\outlinebox}[2]{%
+    \BoxedText{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\sentence}[4]{$^{\circled{#2}}${\BoxedText[draw=#3!70!black,fill=#3!15,thick]{start#1}{end#1}
+    \tikzmark{start#1}#4
+    \tikzmark{end#1}}}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\newcommand{\indicator}[1]{%
+  \tikz[baseline=(char.base)]\node[anchor=south west, draw,rectangle, rounded corners, inner sep=2pt, minimum size=6mm,
+    text height=2mm](char){\textbf{#1}} ;}
+
+
+
+
+
+
+\newcommand{\ptext}[1]{\parbox{.9\textwidth}{#1}}
+
+\newcommand{\wff}
+{Well Formed Formula }
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lhead{PHIL131.01 \\ Assignment-6}
+\rhead{Atahan \\ Haznedar} 
+\chead{\textbf{2021107075}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+    \section*{Chapter 5}
+    \paragraph{III}
+    Using basic or derived rules, prove the validity of the following argument forms.
+    
+    \begin{problem}{1}
+        $P \iff Q,Q\iff R \vdash P \iff R$
+    \end{problem}
+    
+    \begin{solution} 
+        \begin{logicproof}{1}
+            P \iff Q & A \\
+            (P \Rightarrow Q) \& (Q \Rightarrow P) & 1\iff E\\
+            P \Rightarrow Q & 2\&E \\
+            Q \Rightarrow P & 2\&E \\
+            Q \iff R & A \\
+            (Q \Rightarrow R )\&(R \Rightarrow Q) & 5\iff E \\
+            Q \Rightarrow R & 6\&E \\
+            R \Rightarrow Q & 6\&E \\
+                \begin{subproof}
+                    P & H \\
+                    Q & 9,3\Rightarrow E \\
+                    R & 10,7\Rightarrow E
+                \end{subproof}
+            P \Rightarrow R & 9-11\Rightarrow I \\
+                \begin{subproof}
+                    R & H \\
+                    Q & 13,8\Rightarrow E \\
+                    P & 14,4\Rightarrow E 
+                \end{subproof}
+            R \Rightarrow P & 13-15 \Rightarrow I \\
+            P \iff R & 12,16\iff I
+        \end{logicproof}
+    \end{solution}
+
+\clearpage
+
+    \begin{problem}{2}
+        $P \Rightarrow Q \vdash (P\& R) \Rightarrow (Q \& R)$
+    \end{problem}
+    
+    \begin{solution}
+        \begin{logicproof}{2}
+            P \Rightarrow Q & A \\
+                \begin{subproof}
+                    P \& R & H \\
+                    P & 2 \&E \\
+                    R & 2\& E \\
+                    Q & 1,3 \Rightarrow E \\
+                    Q \& R & 4,5 \& I
+                \end{subproof}
+            (P\&R)\Rightarrow(Q\&R) & 2-6\Rightarrow I
+        \end{logicproof}
+    \end{solution}
+
+
+\paragraph{IV}
+Using basic or derived rules, prove the following theorems.
+
+    \begin{problem}{4}
+        $(P\rightarrow Q) \rightarrow (\sim Q \rightarrow \sim P)$
+    \end{problem}
+    
+    \begin{solution}
+        \begin{logicproof}{3}
+            \begin{subproof}
+                $P \rightarrow Q$ & H \\
+                    \begin{subproof}
+                        $\sim Q$ & H \\
+                            \begin{subproof}
+                                P & H \\
+                                Q & $1,3 \rightarrow E$\\
+                                $\sim Q$ \& Q & 2,4 \& I  
+                            \end{subproof}
+                        $\sim$ P & $3-5 \sim I$ 
+                    \end{subproof}
+                    $\sim Q \rightarrow \sim P$ & $2-6\rightarrow I$ 
+            \end{subproof}
+        $(P \rightarrow Q)\rightarrow(\sim Q \rightarrow \sim P)$ & $1-7 \rightarrow I$    
+        \end{logicproof}
+    \end{solution}
+\clearpage
+
+    \begin{problem}{8}
+        $\vdash P \lor (P \rightarrow Q)$
+    \end{problem}
+    
+    \begin{solution}
+        \begin{logicproof}{4}
+            \begin{subproof}
+            $\sim (P \lor (P \rightarrow Q))$ & H \\
+            $\sim P \& \sim (P \rightarrow Q)$ & 1DM \\
+            $\sim (P \rightarrow Q)$ & $2 \& E$ \\
+            $\sim (\sim P \lor Q)$ & 3MI \\
+            $\sim \sim P \& \sim Q$ & 4DM \\
+            $P \& \sim Q$ & 5DN \\
+            $P$  & 6\&E \\
+            $\sim P$ &  2 \& E \\
+            $P \& \sim P$ & $7,8 \& I$ 
+            \end{subproof}
+            $\sim \sim (P \lor (P \rightarrow Q))$ & $1-9\sim I$ \\
+            $(P \lor (P \rightarrow Q))$ & 10DN
+        \end{logicproof}
+    \end{solution}
+    
+\clearpage
+\paragraph{V}
+Using basis or derived rules, prove the following equivalences.
+    
+    \begin{problem}{1} 
+        $\vdash (P \& Q) \iff \sim (\sim P \lor \sim Q)$
+    \end{problem}
+    
+    \begin{solution}
+        \begin{logicproof}{5}
+            \begin{subproof}
+            $P \& Q$ & H \\
+            P & 1\&E \\
+            Q & 1\&E \\
+                \begin{subproof}
+                \sim P \lor \sim Q & H \\ 
+                \sim(P \& Q) & 4DM \\
+                (P \& Q) \& \sim (P \& Q) & 5,1\&I 
+                \end{subproof}
+            $\sim (\sim P \lor \sim Q)$ & $4-6 \sim I$
+            \end{subproof}
+        $(P \& Q) \rightarrow \sim (\sim P \lor \sim Q)$ & $1-7 \rightarrow I$\\
+            \begin{subproof}
+                $\sim (\sim P \lor \sim Q)$ & H \\
+                $\sim \sim P \& \sim \sim Q$ & 9DM \\
+                $\sim \sim P$ & 10 \& E \\
+                P & 11DN \\
+                $\sim \sim Q$ & 10 \& E \\
+                Q & 13DN \\
+                $P\&Q$ & 12,14\&I 
+            \end{subproof}
+        $(\sim (\sim P \lor \sim Q)) \rightarrow (P \& Q)$ & 9-15 \rightarrow I \\
+        $(P \& Q) \iff (\sim (\sim P \lor \sim Q))$ & 8,16 \iff I 
+        \end{logicproof}    
+    \end{solution}
+ \clearpage
+ 
+    \begin{problem}{4}
+        $\vdash (P \lor Q) \iff \sim P \rightarrow Q$
+    \end{problem}
+    
+    \begin{solution}
+        \begin{logicproof}{6}
+            \begin{subproof}
+                $P \lor Q$ & H \\
+                \begin{subproof}
+                    $\sim P$ & H \\
+                    $(P \lor Q) \& \sim P$ & $1,3 \& I$ \\
+                    $(P \& \sim P) \lor (\sim P \& Q)$ & 3DIST \\
+                    $\sim P \& Q$ & 4CONT \\
+                    $Q$ & $5 \& E$ 
+                \end{subproof}
+            $\sim P \rightarrow Q$ & $2-6 \rightarrow I$ 
+            \end{subproof}
+        $(P \lor Q) \rightarrow (\sim P \rightarrow Q)$ & $1-7 \rightarrow I$ \\
+            \begin{subproof}
+            $\sim P \rightarrow Q$ & H \\
+            $\sim \sim P \lor Q$ & 9MI \\
+            $P \lor Q$ & 10DN 
+            \end{subproof}
+        $(\sim P \rightarrow Q) \rightarrow (P \lor Q)$ & $9-11\rightarrow I$ \\
+        $(P \lor Q) \iff (\sim P \rightarrow Q)$ & $8,12 \iff I$
+        \end{logicproof}
+\end{document}

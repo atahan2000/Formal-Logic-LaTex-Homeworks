@@ -1,0 +1,492 @@
+\documentclass[12pt]{article}
+\usepackage[margin=5cm]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts, fancyhdr, color, comment, graphicx, environ}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage[shortlabels]{enumitem}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{tensor}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\usepackage{tikz-cd}
+\tikzset{ampersand replacement = \&}
+\pagestyle{fancy}
+
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+            
+    
+
+\newenvironment{problem}[2][Problem]
+    { \begin{mdframed}[backgroundcolor=gray!20] \textbf{#1 #2} \\}
+    {  \end{mdframed}}
+
+\newenvironment{solution}
+    {{\textbf{Solution}}}
+
+\def\boxit#1#2{%
+    \smash{\color{red}\fboxrule=1pt\relax\fboxsep=2pt\relax%
+    \llap{\rlap{\fbox{\phantom{\rule{#1}{#2}}}}~}}\ignorespaces
+}
+
+\newcommand\LL[1]{\multicolumn{1}{|c}{#1}}
+\newcommand\RR[1]{\multicolumn{1}{c|}{#1}}
+\newcommand\LR[1]{\multicolumn{1}{|c|}{#1}}
+% \cline{2-7}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikzpagenodes}
+\usetikzlibrary{calc}
+
+\makeatletter
+\tikzset{%
+  remember picture with id/.style={%
+    remember picture,
+    overlay,
+    save picture id=#1,
+  },
+  save picture id/.code={%
+    \edef\pgf@temp{#1}%
+    \immediate\write\pgfutil@auxout{%
+      \noexpand\savepointas{\pgf@temp}{\pgfpictureid}}%
+  },
+  if picture id/.code args={#1#2#3}{%
+    \@ifundefined{save@pt@#1}{%
+      \pgfkeysalso{#3}%
+    }{
+      \pgfkeysalso{#2}%
+    }
+  }
+}
+
+\def\savepointas#1#2{%
+  \expandafter\gdef\csname save@pt@#1\endcsname{#2}%
+}
+
+\def\tmk@labeldef#1,#2\@nil{%
+  \def\tmk@label{#1}%
+  \def\tmk@def{#2}%
+}
+
+\tikzdeclarecoordinatesystem{pic}{%
+  \pgfutil@in@,{#1}%
+  \ifpgfutil@in@%
+    \tmk@labeldef#1\@nil
+  \else
+    \tmk@labeldef#1,(0pt,0pt)\@nil
+  \fi
+  \@ifundefined{save@pt@\tmk@label}{%
+    \tikz@scan@one@point\pgfutil@firstofone\tmk@def
+  }{%
+  \pgfsys@getposition{\csname save@pt@\tmk@label\endcsname}\save@orig@pic%
+  \pgfsys@getposition{\pgfpictureid}\save@this@pic%
+  \pgf@process{\pgfpointorigin\save@this@pic}%
+  \pgf@xa=\pgf@x
+  \pgf@ya=\pgf@y
+  \pgf@process{\pgfpointorigin\save@orig@pic}%
+  \advance\pgf@x by -\pgf@xa
+  \advance\pgf@y by -\pgf@ya
+  }%
+}
+\newcommand\tikzmark[2][]{%
+\tikz[remember picture with id=#2] #1;}
+\makeatother
+
+\newcommand\BoxedText[3][]{%
+\begin{tikzpicture}[remember picture,overlay]
+\draw[#1] 
+  let \p1=(pic cs:#2), \p2=(pic cs:#3) in
+  ([yshift=-0.8ex]\p1) --
+  ([yshift=2ex]\p1) -- 
+  ([xshift=3pt,yshift=2ex]\p1-|current page text area.east) -- 
+  ([xshift=3pt,yshift=2ex]\p2-|current page text area.east) --
+  ([yshift=2ex]\p2) --
+  ([yshift=-0.8ex]\p2) --
+  ([xshift=-3pt,yshift=-0.8ex]\p2-|current page text area.west) --
+  ([xshift=-3pt,yshift=-0.8ex]\p1-|current page text area.west) --
+  cycle
+;
+\end{tikzpicture}%
+}
+
+\newcommand{\gradientbox}[2]{%
+    \BoxedText[draw=orange!70!black,right color=orange!10,left color=orange!50]     {start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\shadedbox}[2]{%
+    \BoxedText[draw=cyan!70!black,fill=cyan!30,ultra thick]{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\outlinebox}[2]{%
+    \BoxedText{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\sentence}[4]{$^{\circled{#2}}${\BoxedText[draw=#3!70!black,fill=#3!15,thick]{start#1}{end#1}
+    \tikzmark{start#1}#4
+    \tikzmark{end#1}}}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\newcommand{\indicator}[1]{%
+  \tikz[baseline=(char.base)]\node[anchor=south west, draw,rectangle, rounded corners, inner sep=2pt, minimum size=6mm,
+    text height=2mm](char){\textbf{#1}} ;}
+
+
+\newcommand{\ptext}[1]{\parbox{.9\textwidth}{#1}}
+
+\newcommand{\wff}
+{Well Formed Formula }
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lhead{PHIL131.01 \\ Assignment-4}
+\rhead{Atahan \\ Haznedar} 
+\chead{\textbf{2021107075}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+    \section*{Chapter 4}
+    \paragraph{IV}
+        Test the following forms for validity, using either truth tables or refutation trees.
+
+    \begin{problem}{1}
+        $\sim P \vdash P \Rightarrow \sim P$
+    \end{problem}
+    
+        \begin{solution}
+        It is a valid argument.
+            \begin{center}
+                \begin{tabular}{c |c c c c c c c c}
+                     P & $\sim$ & P & $\vdash$ & (P & $\Rightarrow$ & $\sim$ & P) & {}  \\ \hline 
+                     T & \textcolor{red}F & T & {} & T & \textcolor{red}{F} & F & T & {}\\
+                     F & \textcolor{red}T & F & {} & F & \textcolor{red}{T} & T & F & {\checkmark} \\
+                \end{tabular}
+            \end{center}
+        \end{solution}
+    
+    \begin{problem}{2}
+        $P \lor Q \vdash P\&Q$
+    \end{problem}
+    
+        \begin{solution}
+        It is a invalid argument.
+            \begin{center}
+                \begin{tabular}{c c | c c c c c c c c}
+                    P & Q & (P & \lor & Q) & \vdash & (P & \& &  Q) & {}   \\ \hline
+                    T & T & T & \textcolor{red}T & T & {} & T & \textcolor{red}T & T & {\checkmark}\\
+                    T & F & T & \textcolor{red}T & F & {} & T & \textcolor{red}F & F & {$\times$}\\
+                    F & T & F & \textcolor{red}T & T & {} & F & \textcolor{red}F & T & {$\times$}\\
+                    F & F & F & \textcolor{red}F & F & {} & F & \textcolor{red}F & F & {}\\
+                \end{tabular}
+            \end{center}
+        \end{solution}
+    
+    
+    \begin{problem}{3}
+      $P \Rightarrow \sim Q \vdash \sim (P\&Q)$
+    \end{problem}
+
+       \begin{solution}
+       It is a valid argument.
+            \begin{center}
+                \begin{tabular}{c c | c c c c c c c c c c}
+                    P & Q & (P & \Rightarrow & \sim & Q) & \vdash & \sim & (P & \& &  Q) & {}   \\ \hline
+                    T & T & T & \textcolor{red}F & F & T & {} & \textcolor{red}F & T & T & T & {}\\
+                    T & F & T & \textcolor{red}T & T & F & {} & \textcolor{red}T & T & F & F & {\checkmark}\\
+                    F & T & F & \textcolor{red}T & F & T & {} & \textcolor{red}T & F & F & T & {\checkmark}\\
+                    F & F & F & \textcolor{red}T & T & F & {} & \textcolor{red}T & F & F & F & {\checkmark}\\
+                \end{tabular}
+            \end{center}
+        \end{solution}    
+    
+    \begin{problem}{4}
+        $P \vdash (P \Rightarrow(Q\&P))\Rightarrow (P \&Q)$
+    \end{problem}
+
+       \begin{solution}
+       It is a valid argument.
+            \begin{center}
+                \begin{tabular}{c c | c c c c c c c c c c c c c c}
+                    P & Q & P & \vdash & (P &  \Rightarrow & (Q & \& & P)) & \Rightarrow &  (P & \& & Q) & {}   \\ \hline
+                    T & T & \textcolor{red}T & {} & T & T & T & T & T & \textcolor{red}T & T & T & T & {\checkmark}\\
+                    T & F & \textcolor{red}T & {} & T & F & F & F & T & \textcolor{red}T & T & F & F & {\checkmark}\\
+                    F & T & \textcolor{red}F & {} & F & T & T & F & F & \textcolor{red}F & F & F & T & {}\\
+                    F & F & \textcolor{red}F & {} & F & T & F & F & T & \textcolor{red}F & F & F & F & {}\\
+                \end{tabular}
+            \end{center}
+        \end{solution}    
+    
+    \begin{problem}{5}
+    $P \lor Q, \sim P, \sim Q \vdash R$
+    \end{problem}
+    
+        \begin{solution}
+        It is a inconsistent argument.
+             \begin{center}
+                \begin{tabular}{c c c|c c c c c c c c c c}
+                    P & Q & R & (P & \lor & Q), & \sim & P, & \sim & Q & \vdash & R & {} \\ \hline
+                    T & T & T & T & \textcolor{red}T & T & \textcolor{red}F & T & \textcolor{red}F & T & {} & \textcolor{red}T & {}\\
+                    T & T & F & T & \textcolor{red}T & T & \textcolor{red}F & T & \textcolor{red}F & T & {} & \textcolor{red}F & {}\\
+                    T & F & T & T & \textcolor{red}T & F & \textcolor{red}F & T & \textcolor{red}T & F & {} & \textcolor{red}T & {}\\
+                    T & F & F & T & \textcolor{red}T & F & \textcolor{red}F & T & \textcolor{red}T & F & {} & \textcolor{red}F & {}\\
+                    F & T & T & F & \textcolor{red}T & T & \textcolor{red}T & F & \textcolor{red}F & T & {} & \textcolor{red}T & {}\\
+                    F & T & F & F & \textcolor{red}T & T & \textcolor{red}T & F & \textcolor{red}F & T & {} & \textcolor{red}F & {}\\
+                    F & F & T & F & \textcolor{red}F & F & \textcolor{red}T & F & \textcolor{red}T & F & {} & \textcolor{red}T & {}\\
+                    F & F & F & F & \textcolor{red}F & F & \textcolor{red}T & F & \textcolor{red}T & F & {} & \textcolor{red}F & {}\\ 
+                \end{tabular}
+            \end{center}
+        \end{solution}    
+
+\clearpage
+    \begin{problem}{6}
+    $(Q\&R)\Rightarrow P, \sim Q, \sim R \vdash \sim P$
+    \end{problem}
+
+        \begin{solution}
+        This argument is invalid
+             \begin{center}
+                \begin{tabular}{c c c|c c c c c c c c c c c c c}
+                    P & Q & R & (Q & \& & R) & \Rightarrow & P, & \sim & Q, & \sim & R & \vdash & \sim & P & {} \\ \hline
+                    T & T & T & T & T & T & \textcolor{red}T & T & \textcolor{red}F & T & \textcolor{red}F & T & {} & \textcolor{red}F & T & {}\\
+                    T & T & F & T & F & F & \textcolor{red}T & T & \textcolor{red}F & T & \textcolor{red}T & F & {} & \textcolor{red}F & T & {}\\
+                    T & F & T & F & F & T & \textcolor{red}T & T & \textcolor{red}T & F & \textcolor{red}F & T & {} & \textcolor{red}F & T & {}\\
+                    T & F & F & F & F & F & \textcolor{red}T & T & \textcolor{red}T & F & \textcolor{red}T & F & {} & \textcolor{red}F & T & {$\times$}\\
+                    F & T & T & T & T & T & \textcolor{red}F & F & \textcolor{red}F & T & \textcolor{red}F & T & {} & \textcolor{red}T & F & {}\\
+                    F & T & F & T & F & F & \textcolor{red}T & F & \textcolor{red}F & T & \textcolor{red}T & F & {} & \textcolor{red}T & F & {}\\
+                    F & F & T & F & F & T & \textcolor{red}T & F & \textcolor{red}T & F & \textcolor{red}F & T & {} & \textcolor{red}T & F & {}\\
+                    F & F & F & F & F & F & \textcolor{red}T & F & \textcolor{red}T & F & \textcolor{red}T & F & {} & \textcolor{red}T & F & {}\\ 
+                \end{tabular}
+            \end{center}
+        \end{solution}  
+
+    \begin{problem}{7}
+    $\sim (P \lor Q), R\iff P \vdash \sim R$
+    \end{problem}
+    
+        \begin{solution}
+        It is a valid argument.
+             \begin{center}
+                \begin{tabular}{c c c|c c c c c c c c c c c}
+                    P & Q & R & \sim & (P & \lor & Q), & R & \iff & P & \vdash & \sim & R &  {} \\ \hline
+                    T & T & T & \textcolor{red}F & T & T & T & T & \textcolor{red}T & T & {} & \textcolor{red}F & T & {} \\
+                    T & T & F & \textcolor{red}F & T & T & T & F & \textcolor{red}F & T & {} & \textcolor{red}T & F & {} \\
+                    T & F & T & \textcolor{red}F & T & T & F & T & \textcolor{red}T & T & {} & \textcolor{red}F & T & {} \\
+                    T & F & F & \textcolor{red}F & T & T & F & F & \textcolor{red}F & T & {} & \textcolor{red}T & F & {} \\
+                    F & T & T & \textcolor{red}F & F & T & T & T & \textcolor{red}F & F & {} & \textcolor{red}F & T & {} \\
+                    F & T & F & \textcolor{red}F & F & T & T & F & \textcolor{red}T & F & {} & \textcolor{red}T & F & {} \\
+                    F & F & T & \textcolor{red}T & F & F & F & T & \textcolor{red}F & F & {} & \textcolor{red}F & T & {} \\
+                    F & F & F & \textcolor{red}T & F & F & F & F & \textcolor{red}T & F & {} & \textcolor{red}T & F & {\checkmark} \\
+                \end{tabular}
+            \end{center}
+        \end{solution}      
+    
+\clearpage
+    \begin{problem}{8}
+    $\sim (P \& Q), (R \iff P) \vdash \sim R$
+    \end{problem}
+        
+        \begin{solution}
+        It is an invalid argument.
+            \begin{center}
+                \begin{tabular}{@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{}c@{}@{ }c@{ }@{ }c@{ }@{ }c@{ }@{}c@{ } | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c c}
+P & Q & R & $\sim$ & ( & P & $\&$ & Q & ) &  & R & $\leftrightarrow$ & P &  & $\sim$ & R\\
+\hline 
+T & T & T & \textcolor{red}{F} &  & T & T & T &  &  & T & \textcolor{red}{T} & T &  & \textcolor{red}{F} & T\\
+T & T & F & \textcolor{red}{F} &  & T & T & T &  &  & F & \textcolor{red}{F} & T &  & \textcolor{red}{T} & F\\
+T & F & T & \textcolor{red}{T} &  & T & F & F &  &  & T & \textcolor{red}{T} & T &  & \textcolor{red}{F} & T & $\times$ \\
+T & F & F & \textcolor{red}{T} &  & T & F & F &  &  & F & \textcolor{red}{F} & T &  & \textcolor{red}{T} & F\\
+F & T & T & \textcolor{red}{T} &  & F & F & T &  &  & T & \textcolor{red}{F} & F &  & \textcolor{red}{F} & T\\
+F & T & F & \textcolor{red}{T} &  & F & F & T &  &  & F & \textcolor{red}{T} & F &  & \textcolor{red}{T} & F \\
+F & F & T & \textcolor{red}{T} &  & F & F & F &  &  & T & \textcolor{red}{F} & F &  & \textcolor{red}{F} & T\\
+F & F & F & \textcolor{red}{T} &  & F & F & F &  &  & F & \textcolor{red}{T} & F &  & \textcolor{red}{T} & F \\
+\end{tabular}
+            \end{center}
+        \end{solution}
+    
+    \begin{problem}{9}
+    $P \iff Q, Q\iff R \vdash P \iff R$
+    \end{problem}
+    \begin{solution}
+    It is a valid argument.
+    \begin{center}
+        \begin{tabular}{@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c c}
+P & Q & R &  & P & $\leftrightarrow$ & Q &  &  & Q & $\leftrightarrow$ & R &  &  & P & $\leftrightarrow$ & R & \\
+\hline 
+T & T & T &  & T & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & \checkmark\\
+T & T & F &  & T & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{F} & F &  &  & T & \textcolor{red}{F} & F & \\
+T & F & T &  & T & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{F} & T &  &  & T & \textcolor{red}{T} & T & \\
+T & F & F &  & T & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{T} & F &  &  & T & \textcolor{red}{F} & F & \\
+F & T & T &  & F & \textcolor{red}{F} & T &  &  & T & \textcolor{red}{T} & T &  &  & F & \textcolor{red}{F} & T & \\
+F & T & F &  & F & \textcolor{red}{F} & T &  &  & T & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{T} & F & \\
+F & F & T &  & F & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{F} & T &  &  & F & \textcolor{red}{F} & T & \\
+F & F & F &  & F & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{T} & F & \checkmark\\
+\end{tabular}
+    \end{center}
+    \end{solution}
+
+\clearpage
+    \begin{problem}{10}
+    $P\Rightarrow (R \lor S), (R \& S) \Rightarrow Q \vdash P \Rightarrow Q$
+    \end{problem}
+    
+    \begin{solution}
+    It is an invalid argument.
+    \begin{center}
+        %NOTE: requires \usepackage{color}
+\begin{tabular}{@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{}c@{}@{ }c@{ }@{ }c@{ }@{ }c@{ }@{}c@{}@{ }c | c@{ }@{}c@{}@{ }c@{ }@{ }c@{ }@{ }c@{ }@{}c@{}@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c c}
+P & Q & R & S &  & P & $\rightarrow$ & ( & R & $\lor$ & S & ) &  &  & ( & R & $\land$ & S & ) & $\rightarrow$ & Q &  &  & P & $\rightarrow$ & Q & \\
+\hline 
+T & T & T & T &  & T & \textcolor{red}{T} &  & T & T & T &  &  &  &  & T & T & T &  & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & \\
+T & T & T & F &  & T & \textcolor{red}{T} &  & T & T & F &  &  &  &  & T & F & F &  & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & \\
+T & T & F & T &  & T & \textcolor{red}{T} &  & F & T & T &  &  &  &  & F & F & T &  & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & \\
+T & T & F & F &  & T & \textcolor{red}{F} &  & F & F & F &  &  &  &  & F & F & F &  & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & \\
+T & F & T & T &  & T & \textcolor{red}{T} &  & T & T & T &  &  &  &  & T & T & T &  & \textcolor{red}{F} & F &  &  & T & \textcolor{red}{F} & F & \\
+T & F & T & F &  & T & \textcolor{red}{T} &  & T & T & F &  &  &  &  & T & F & F &  & \textcolor{red}{T} & F &  &  & T & \textcolor{red}{F} & F & {$\times$}\\
+T & F & F & T &  & T & \textcolor{red}{T} &  & F & T & T &  &  &  &  & F & F & T &  & \textcolor{red}{T} & F &  &  & T & \textcolor{red}{F} & F & \\
+T & F & F & F &  & T & \textcolor{red}{F} &  & F & F & F &  &  &  &  & F & F & F &  & \textcolor{red}{T} & F &  &  & T & \textcolor{red}{F} & F & \\
+F & T & T & T &  & F & \textcolor{red}{T} &  & T & T & T &  &  &  &  & T & T & T &  & \textcolor{red}{T} & T &  &  & F & \textcolor{red}{T} & T & \\
+F & T & T & F &  & F & \textcolor{red}{T} &  & T & T & F &  &  &  &  & T & F & F &  & \textcolor{red}{T} & T &  &  & F & \textcolor{red}{T} & T & \\
+F & T & F & T &  & F & \textcolor{red}{T} &  & F & T & T &  &  &  &  & F & F & T &  & \textcolor{red}{T} & T &  &  & F & \textcolor{red}{T} & T & \\
+F & T & F & F &  & F & \textcolor{red}{T} &  & F & F & F &  &  &  &  & F & F & F &  & \textcolor{red}{T} & T &  &  & F & \textcolor{red}{T} & T & \\
+F & F & T & T &  & F & \textcolor{red}{T} &  & T & T & T &  &  &  &  & T & T & T &  & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{T} & F & \\
+F & F & T & F &  & F & \textcolor{red}{T} &  & T & T & F &  &  &  &  & T & F & F &  & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{T} & F & \\
+F & F & F & T &  & F & \textcolor{red}{T} &  & F & T & T &  &  &  &  & F & F & T &  & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{T} & F & \\
+F & F & F & F &  & F & \textcolor{red}{T} &  & F & F & F &  &  &  &  & F & F & F &  & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{T} & F & \\
+\end{tabular}
+    \end{center}
+    \end{solution}
+
+\clearpage
+\paragraph{V}
+Formalize the following arguments, using the interpretation given below, and test their forms for validity using either truth tables or refutation trees.
+
+\begin{center}
+    \begin{tabular}{l l}
+        Sentence & Letter Interpretation \\ \hline
+        C & Argument form F has a counterexample. \\
+        I & The premises of argument form F are inconsistent. \\
+        O & The ﬁnished tree for argument form F contains an open path. \\
+        V  & Argument form F is valid. \\
+    \end{tabular}   
+\end{center}
+
+\begin{problem}{1}
+    If argument form F is valid, then its ﬁnished tree contains no open paths. Hence if its ﬁnished tree contains an open path, it is invalid.
+\end{problem}
+
+\begin{solution} 
+It is a valid argument.
+\begin{center}
+    \begin{tabular}{@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c}
+    O & V &  & V & $\rightarrow$ & $\sim$ & O &  &  & O & $\rightarrow$ & $\sim$ & V & \\
+    \hline 
+    T & T &  & T & \textcolor{red}{F} & F & T &  &  & T & \textcolor{red}{F} & F & T & \\
+    T & F &  & F & \textcolor{red}{T} & F & T &  &  & T & \textcolor{red}{T} & T & F & \checkmark\\
+    F & T &  & T & \textcolor{red}{T} & T & F &  &  & F & \textcolor{red}{T} & F & T & \checkmark\\
+    F & F &  & F & \textcolor{red}{T} & T & F &  &  & F & \textcolor{red}{T} & T & F & \checkmark\\
+    \end{tabular}
+\end{center}
+\end{solution}
+
+\begin{problem}{2}
+    If the premises of argument form F are inconsistent, then F is valid. Therefore, if the premises of form F are not inconsistent, then form F is invalid.
+\end{problem}
+
+\begin{solution}
+It is an invalid argument.
+\begin{center}
+    \begin{tabular}{@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c}
+I & V &  & I & $\rightarrow$ & V &  &  & $\sim$ & I & $\rightarrow$ & $\sim$ & V & \\
+\hline 
+T & T &  & T & \textcolor{red}{T} & T &  &  & F & T & \textcolor{red}{T} & F & T & \\
+T & F &  & T & \textcolor{red}{F} & F &  &  & F & T & \textcolor{red}{T} & T & F & \\
+F & T &  & F & \textcolor{red}{T} & T &  &  & T & F & \textcolor{red}{F} & F & T & $\times$ \\
+F & F &  & F & \textcolor{red}{T} & F &  &  & T & F & \textcolor{red}{T} & T & F & \\
+\end{tabular}
+\end{center}
+\end{solution}
+
+\begin{problem}{3}
+    If argument form F has a counterexample, then its premises are not inconsistent. For it is not the case both that it has a counterexample and that its premises are consistent.
+\end{problem}
+
+\begin{solution}
+It is an invalid argument.
+\begin{center}
+\begin{tabular}{@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{}c@{}@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{}c@{ }}
+C & I &  & C & $\rightarrow$ & $\sim$ & I &  & $\sim$ & ( & C & $\&$ & $\sim$ & I & )\\
+\hline 
+T & T &  & T & \textcolor{red}{F} & F & T &  & \textcolor{red}{T} &  & T & F & F & T & \\
+T & F &  & T & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} &  & T & T & T & F & $\times$\\
+F & T &  & F & \textcolor{red}{T} & F & T &  & \textcolor{red}{T} &  & F & F & F & T & \\
+F & F &  & F & \textcolor{red}{T} & T & F &  & \textcolor{red}{T} &  & F & F & T & F & \\
+\end{tabular}
+
+\end{center}
+\end{solution}
+
+\begin{problem}{4}
+    Either argument form F has a counterexample or it is valid, but not both. Hence form F is valid if and only if it has no counterexample.
+\end{problem}
+
+\begin{solution}
+It is a valid argument.
+\begin{center}
+    \begin{tabular}{@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c}
+C & V &  & C & $\oplus$ & V &  &  & V & $\leftrightarrow$ & $\sim$ & C & \\
+\hline 
+T & T &  & T & \textcolor{red}{F} & T &  &  & T & \textcolor{red}{F} & F & T & \\
+T & F &  & T & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{T} & F & T & \checkmark\\
+F & T &  & F & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & F & \checkmark\\
+F & F &  & F & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{F} & T & F & \\
+\end{tabular}
+\end{center}
+\end{solution}
+
+
+\clearpage
+\begin{problem}{5}
+    The premises of argument form F are inconsistent. If the premises of F are inconsistent, then F is valid. F is valid if and only if its ﬁnished tree contains no open path. If its ﬁnished tree contains no open path, then it has no counterexample. Form F has a counterexample. Therefore, the premises of form F are not inconsistent.
+\end{problem}
+
+\begin{solution}
+It's a inconsistent argument.
+\begin{center}
+    \begin{tabular}{@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c@{ }@{ }c | c | c@{ }@{ }c}
+C & I & O & V & I &  & I & $\rightarrow$ & V &  &  & V & $\leftrightarrow$ & $\sim$ & O &  &  & $\sim$ & O & $\rightarrow$ & $\sim$ & C &  & C & $\sim$ & I\\
+\hline 
+T & T & T & T & \textcolor{red}{T} &  & T & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{F} & F & T &  &  & F & T & \textcolor{red}{T} & F & T &  & \textcolor{red}{T} & \textcolor{red}{F} & T\\
+T & T & T & F & \textcolor{red}{T} &  & T & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{T} & F & T &  &  & F & T & \textcolor{red}{T} & F & T &  & \textcolor{red}{T} & \textcolor{red}{F} & T\\
+T & T & F & T & \textcolor{red}{T} &  & T & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & F &  &  & T & F & \textcolor{red}{F} & F & T &  & \textcolor{red}{T} & \textcolor{red}{F} & T\\
+T & T & F & F & \textcolor{red}{T} &  & T & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{F} & T & F &  &  & T & F & \textcolor{red}{F} & F & T &  & \textcolor{red}{T} & \textcolor{red}{F} & T\\
+T & F & T & T & \textcolor{red}{F} &  & F & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{F} & F & T &  &  & F & T & \textcolor{red}{T} & F & T &  & \textcolor{red}{T} & \textcolor{red}{T} & F\\
+T & F & T & F & \textcolor{red}{F} &  & F & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{T} & F & T &  &  & F & T & \textcolor{red}{T} & F & T &  & \textcolor{red}{T} & \textcolor{red}{T} & F\\
+T & F & F & T & \textcolor{red}{F} &  & F & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & F &  &  & T & F & \textcolor{red}{F} & F & T &  & \textcolor{red}{T} & \textcolor{red}{T} & F\\
+T & F & F & F & \textcolor{red}{F} &  & F & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{F} & T & F &  &  & T & F & \textcolor{red}{F} & F & T &  & \textcolor{red}{T} & \textcolor{red}{T} & F\\
+F & T & T & T & \textcolor{red}{T} &  & T & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{F} & F & T &  &  & F & T & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} & \textcolor{red}{F} & T\\
+F & T & T & F & \textcolor{red}{T} &  & T & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{T} & F & T &  &  & F & T & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} & \textcolor{red}{F} & T\\
+F & T & F & T & \textcolor{red}{T} &  & T & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & F &  &  & T & F & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} & \textcolor{red}{F} & T\\
+F & T & F & F & \textcolor{red}{T} &  & T & \textcolor{red}{F} & F &  &  & F & \textcolor{red}{F} & T & F &  &  & T & F & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} & \textcolor{red}{F} & T\\
+F & F & T & T & \textcolor{red}{F} &  & F & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{F} & F & T &  &  & F & T & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} & \textcolor{red}{T} & F\\
+F & F & T & F & \textcolor{red}{F} &  & F & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{T} & F & T &  &  & F & T & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} & \textcolor{red}{T} & F\\
+F & F & F & T & \textcolor{red}{F} &  & F & \textcolor{red}{T} & T &  &  & T & \textcolor{red}{T} & T & F &  &  & T & F & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} & \textcolor{red}{T} & F\\
+F & F & F & F & \textcolor{red}{F} &  & F & \textcolor{red}{T} & F &  &  & F & \textcolor{red}{F} & T & F &  &  & T & F & \textcolor{red}{T} & T & F &  & \textcolor{red}{F} & \textcolor{red}{T} & F\\
+\end{tabular}
+\end{center}
+\end{solution}
+
+\end{document}

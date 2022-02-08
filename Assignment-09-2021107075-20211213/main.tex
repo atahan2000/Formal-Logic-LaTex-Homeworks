@@ -1,0 +1,320 @@
+\documentclass[12pt]{article}
+\usepackage[margin=5cm]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts, fancyhdr, color, comment, graphicx, environ}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage[shortlabels]{enumitem}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{tensor}
+
+\usepackage{logicproof}
+
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\usepackage{tikz-cd}
+\tikzset{ampersand replacement = \&}
+\pagestyle{fancy}
+
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+            
+    
+
+\newenvironment{problem}[2][Problem]
+    { \begin{mdframed}[backgroundcolor=gray!20] \textbf{#1 #2} \\}
+    {  \end{mdframed}}
+
+\newenvironment{solution}
+    {{\textbf{Solution}}}
+
+\def\boxit#1#2{%
+    \smash{\color{red}\fboxrule=1pt\relax\fboxsep=2pt\relax%
+    \llap{\rlap{\fbox{\phantom{\rule{#1}{#2}}}}~}}\ignorespaces
+}
+
+\newcommand\LL[1]{\multicolumn{1}{|c}{#1}}
+\newcommand\RR[1]{\multicolumn{1}{c|}{#1}}
+\newcommand\LR[1]{\multicolumn{1}{|c|}{#1}}
+% \cline{2-7}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikzpagenodes}
+\usetikzlibrary{calc}
+
+\makeatletter
+\tikzset{%
+  remember picture with id/.style={%
+    remember picture,
+    overlay,
+    save picture id=#1,
+  },
+  save picture id/.code={%
+    \edef\pgf@temp{#1}%
+    \immediate\write\pgfutil@auxout{%
+      \noexpand\savepointas{\pgf@temp}{\pgfpictureid}}%
+  },
+  if picture id/.code args={#1#2#3}{%
+    \@ifundefined{save@pt@#1}{%
+      \pgfkeysalso{#3}%
+    }{
+      \pgfkeysalso{#2}%
+    }
+  }
+}
+
+\def\savepointas#1#2{%
+  \expandafter\gdef\csname save@pt@#1\endcsname{#2}%
+}
+
+\def\tmk@labeldef#1,#2\@nil{%
+  \def\tmk@label{#1}%
+  \def\tmk@def{#2}%
+}
+
+\tikzdeclarecoordinatesystem{pic}{%
+  \pgfutil@in@,{#1}%
+  \ifpgfutil@in@%
+    \tmk@labeldef#1\@nil
+  \else
+    \tmk@labeldef#1,(0pt,0pt)\@nil
+  \fi
+  \@ifundefined{save@pt@\tmk@label}{%
+    \tikz@scan@one@point\pgfutil@firstofone\tmk@def
+  }{%
+  \pgfsys@getposition{\csname save@pt@\tmk@label\endcsname}\save@orig@pic%
+  \pgfsys@getposition{\pgfpictureid}\save@this@pic%
+  \pgf@process{\pgfpointorigin\save@this@pic}%
+  \pgf@xa=\pgf@x
+  \pgf@ya=\pgf@y
+  \pgf@process{\pgfpointorigin\save@orig@pic}%
+  \advance\pgf@x by -\pgf@xa
+  \advance\pgf@y by -\pgf@ya
+  }%
+}
+\newcommand\tikzmark[2][]{%
+\tikz[remember picture with \usepackage{logicproof}
+id=#2] #1;}
+\makeatother
+
+\newcommand\BoxedText[3][]{%
+\begin{tikzpicture}[remember picture,overlay]
+\draw[#1] 
+  let \p1=(pic cs:#2), \p2=(pic cs:#3) in
+  ([yshift=-0.8ex]\p1) --
+  ([yshift=2ex]\p1) -- 
+  ([xshift=3pt,yshift=2ex]\p1-|current page text area.east) -- 
+  ([xshift=3pt,yshift=2ex]\p2-|current page text area.east) --
+  ([yshift=2ex]\p2) --
+  ([yshift=-0.8ex]\p2) --
+  ([xshift=-3pt,yshift=-0.8ex]\p2-|current page text area.west) --
+  ([xshift=-3pt,yshift=-0.8ex]\p1-|current page text area.west) --
+  cycle
+;
+\end{tikzpicture}%
+}
+
+\newcommand{\gradientbox}[2]{%
+    \BoxedText[draw=orange!70!black,right color=orange!10,left color=orange!50]     {start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\shadedbox}[2]{%
+    \BoxedText[draw=cyan!70!black,fill=cyan!30,ultra thick]{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\outlinebox}[2]{%
+    \BoxedText{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\sentence}[4]{$^{\circled{#2}}${\BoxedText[draw=#3!70!black,fill=#3!15,thick]{start#1}{end#1}
+    \tikzmark{start#1}#4
+    \tikzmark{end#1}}}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\newcommand{\indicator}[1]{%
+  \tikz[baseline=(char.base)]\node[anchor=south west, draw,rectangle, rounded corners, inner sep=2pt, minimum size=6mm,
+    text height=2mm](char){\textbf{#1}} ;}
+
+
+
+
+
+
+\newcommand{\ptext}[1]{\parbox{.9\textwidth}{#1}}
+
+\newcommand{\wff}
+{Well Formed Formula }
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lhead{PHIL131.01 \\ Assignment-9}
+\rhead{Atahan \\ Haznedar} 
+\chead{05318867572 \\\textbf{2021107075}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+    \section*{Chapter 6}
+    \paragraph{II}
+    Determine which of the following formulas are wffs and which are not. Explain your answer. \\[2pt]
+    
+\begin{problem}{(4)}
+    $$\sim F_{xy}$$
+\end{problem}    
+    
+\begin{solution}
+    Since x and y lacks a quantifier it not a \wff.
+\end{solution}
+
+\begin{problem}{(8)}
+    $$\forall x F_x \rightarrow L_{ax}$$
+\end{problem}
+
+\begin{solution}
+    There should be outer brackets outside the implication. So it is not a \wff.
+\end{solution}
+    
+\begin{problem}{(10)}
+    $$ \forall x \forall y (F_x \rightarrow \sim y = x)$$
+\end{problem}    
+
+\begin{solution}
+    '$F_a$' is a wff, by rule 1; and since '$b=a$' is a a wff by the rule for identity, '$\sim b=a$' is a wff, by rule 2. Hence '$(F_a \rightarrow \sim b = a)$' is a wff, by rule 3, when two applications of rule 4 it follows that '$\forall x \forall y (F_x \rightarrow \sim y = x)$' is a wff.
+\end{solution}
+    
+    \clearpage
+    \paragraph{III}    
+    Evaluate the following wffs in the model given below: \\[0.5cm]
+
+
+    \begin{tabular}{l l}
+         Universe: & the states of the U.S. \\
+         c: & California \\
+         n: & Nevada \\
+         u: & Utah \\
+         E: & the class of states on the East Coast \\
+         A: & the relation that holds between two adjacent states.\\
+         C: & : the relation that holds between three states x, y, and z\\
+         & just in case the capital of x is closer to the capital of y \\
+          & than to the capital of z.
+    \end{tabular}
+    
+\begin{problem}{(7)}
+    $$\exists x (E_x \& A_{xx} )$$
+\end{problem}
+
+\begin{solution}
+    Since something cannot be adjacent with itself therefore it is False.
+\end{solution}
+
+\begin{problem}{(12)}
+    $$\forall x \exists y \exists z C_{xyz}$$
+\end{problem}
+
+\begin{solution}
+    If y is the same as z so the capital of them should be same so it can't be closer, therefore it is false.
+\end{solution}
+
+\begin{problem}{(18)}
+    $$ \forall x \forall y (A_{xy} \iff A_{yz})$$
+\end{problem}
+
+\begin{solution}
+    Since adjacent property is commutative it is True.
+\end{solution}
+
+
+
+
+
+    \clearpage
+    \paragraph{IV}
+    Determine which of the following argument forms is valid by examining whether there exists a model in which the premises are true and the conclusion false.
+    
+    \begin{problem}{(6)}
+        $$ \forall x \sim F_x \vdash \sim \exists x F_x $$
+    \end{problem}
+    
+    \begin{solution}
+        It is valid since we know the negation of a quantifier changes the quantifier and negates the inside. Therefore it is valid.
+    \end{solution}
+    
+    \begin{problem}{(8)}
+        $$\sim \exists x F_x \vdash \forall x \sim F_x$$ 
+    \end{problem}
+    
+    \begin{solution}
+        It is valid since we know the negation of a quantifier changes the quantifier and negates the inside. Therefore it is valid.
+    \end{solution}
+    
+    \begin{problem}{(9)}
+        $$ \sim \forall x F_x \vdash \exists x \sim F_x $$    
+    \end{problem}
+    
+    \begin{solution}
+        It is valid since we know the negation of a quantifier changes the quantifier and negates the inside. Therefore it is valid.
+    \end{solution}
+    
+    \clearpage
+    \paragraph{VI}
+    Formalize each of the following arguments, using the interpretation given below.
+    
+    \begin{tabular}{c|c}
+         Symbols & Interpretation  \\ \hline
+         Names &  \\
+         p & propositional logic \\
+         r & predicate logic \\
+         i & predicate logic with identity \\
+         One-Place Predicates & \\
+         R & is a set of rules \\
+         S & is a formal system \\
+         Two-Place Predicates & \\
+         F & is a formula of \\
+         P & is a part of \\
+         W & is a wff of \\
+    \end{tabular}
+    
+\begin{problem}{(1)}
+    Propositional logic is a part of predicate logic. Therefore, predicate logic is not a part of propositional logic.
+\end{problem}
+
+\begin{solution}
+    $$P_{pr} \vdash \sim P_{rp} $$
+\end{solution}
+
+\begin{problem}{(5)}
+    Every formal system is a set of rules. Therefore, every set of rules is a formal system
+\end{problem}
+
+\begin{solution}
+    $$ \forall x (S_x \rightarrow R_x) \vdash \forall x (R_x \rightarrow S_x)$$
+\end{solution}
+
+\clearpage
+
+\begin{problem}{(14)}
+    If one formal system is part of a second formal system, then every wff of the first is a wff of the second. Predicate logic is a part of predicate logic with identity, and both are formal systems. Therefore, every wff of predicate logic is also a wff of predicate logic with identity.
+\end{problem}
+
+\begin{solution}
+    $$\exists x, y (((S_x \& S_y) \& P_{xy})\rightarrow (\forall w (W_{wx} \rightarrow  W_{wy}))), (P_{ri} \& (S_r \& S_i)) \vdash \forall w (W_{wr} \rightarrow W_{wi})$$
+\end{solution}
+
+
+\end{document}

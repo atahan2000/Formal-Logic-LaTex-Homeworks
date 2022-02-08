@@ -1,0 +1,313 @@
+\documentclass[12pt]{article}
+\usepackage[margin=5cm]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts, fancyhdr, color, comment, graphicx, environ}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage[shortlabels]{enumitem}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{tensor}
+
+\usepackage{logicproof}
+
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\usepackage{tikz-cd}
+\tikzset{ampersand replacement = \&}
+\pagestyle{fancy}
+
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+            
+    
+
+\newenvironment{problem}[2][Problem]
+    { \begin{mdframed}[backgroundcolor=gray!20] \textbf{#1 #2} \\}
+    {  \end{mdframed}}
+
+\newenvironment{solution}
+    {{\textbf{Solution}}}
+
+\def\boxit#1#2{%
+    \smash{\color{red}\fboxrule=1pt\relax\fboxsep=2pt\relax%
+    \llap{\rlap{\fbox{\phantom{\rule{#1}{#2}}}}~}}\ignorespaces
+}
+
+\newcommand\LL[1]{\multicolumn{1}{|c}{#1}}
+\newcommand\RR[1]{\multicolumn{1}{c|}{#1}}
+\newcommand\LR[1]{\multicolumn{1}{|c|}{#1}}
+% \cline{2-7}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikzpagenodes}
+\usetikzlibrary{calc}
+
+\makeatletter
+\tikzset{%
+  remember picture with id/.style={%
+    remember picture,
+    overlay,
+    save picture id=#1,
+  },
+  save picture id/.code={%
+    \edef\pgf@temp{#1}%
+    \immediate\write\pgfutil@auxout{%
+      \noexpand\savepointas{\pgf@temp}{\pgfpictureid}}%
+  },
+  if picture id/.code args={#1#2#3}{%
+    \@ifundefined{save@pt@#1}{%
+      \pgfkeysalso{#3}%
+    }{
+      \pgfkeysalso{#2}%
+    }
+  }
+}
+
+\def\savepointas#1#2{%
+  \expandafter\gdef\csname save@pt@#1\endcsname{#2}%
+}
+
+\def\tmk@labeldef#1,#2\@nil{%
+  \def\tmk@label{#1}%
+  \def\tmk@def{#2}%
+}
+
+\tikzdeclarecoordinatesystem{pic}{%
+  \pgfutil@in@,{#1}%
+  \ifpgfutil@in@%
+    \tmk@labeldef#1\@nil
+  \else
+    \tmk@labeldef#1,(0pt,0pt)\@nil
+  \fi
+  \@ifundefined{save@pt@\tmk@label}{%
+    \tikz@scan@one@point\pgfutil@firstofone\tmk@def
+  }{%
+  \pgfsys@getposition{\csname save@pt@\tmk@label\endcsname}\save@orig@pic%
+  \pgfsys@getposition{\pgfpictureid}\save@this@pic%
+  \pgf@process{\pgfpointorigin\save@this@pic}%
+  \pgf@xa=\pgf@x
+  \pgf@ya=\pgf@y
+  \pgf@process{\pgfpointorigin\save@orig@pic}%
+  \advance\pgf@x by -\pgf@xa
+  \advance\pgf@y by -\pgf@ya
+  }%
+}
+\newcommand\tikzmark[2][]{%
+\tikz[remember picture with \usepackage{logicproof}
+id=#2] #1;}
+\makeatother
+
+\newcommand\BoxedText[3][]{%
+\begin{tikzpicture}[remember picture,overlay]
+\draw[#1] 
+  let \p1=(pic cs:#2), \p2=(pic cs:#3) in
+  ([yshift=-0.8ex]\p1) --
+  ([yshift=2ex]\p1) -- 
+  ([xshift=3pt,yshift=2ex]\p1-|current page text area.east) -- 
+  ([xshift=3pt,yshift=2ex]\p2-|current page text area.east) --
+  ([yshift=2ex]\p2) --
+  ([yshift=-0.8ex]\p2) --
+  ([xshift=-3pt,yshift=-0.8ex]\p2-|current page text area.west) --
+  ([xshift=-3pt,yshift=-0.8ex]\p1-|current page text area.west) --
+  cycle
+;
+\end{tikzpicture}%
+}
+
+\newcommand{\gradientbox}[2]{%
+    \BoxedText[draw=orange!70!black,right color=orange!10,left color=orange!50]     {start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\shadedbox}[2]{%
+    \BoxedText[draw=cyan!70!black,fill=cyan!30,ultra thick]{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\outlinebox}[2]{%
+    \BoxedText{start#1}{end#1}
+    \tikzmark{start#1}#2
+    \tikzmark{end#1}
+}
+
+\newcommand{\sentence}[4]{$^{\circled{#2}}${\BoxedText[draw=#3!70!black,fill=#3!15,thick]{start#1}{end#1}
+    \tikzmark{start#1}#4
+    \tikzmark{end#1}}}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\newcommand{\indicator}[1]{%
+  \tikz[baseline=(char.base)]\node[anchor=south west, draw,rectangle, rounded corners, inner sep=2pt, minimum size=6mm,
+    text height=2mm](char){\textbf{#1}} ;}
+
+
+
+
+
+
+\newcommand{\ptext}[1]{\parbox{.9\textwidth}{#1}}
+
+\newcommand{\wff}
+{Well Formed Formula }
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lhead{PHIL131.01 \\ Assignment-12}
+\rhead{Atahan \\ Haznedar} 
+\chead{05318867572 \\\textbf{2021107075}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+    \section*{Chapter 9}
+    \paragraph{I}
+    Arrange each of the following sets of statements in order from strongest to weakest.
+    
+    \begin{problem}{(2)}
+        (a) Most Americans are employed.
+        (b) There are Americans, and all of them are employed.
+        (c) Some Americans are employed.
+        (d) At least 90 percent of Americans are employed.
+        (e) At least 80 percent of Americans are employed.
+        (f) Someone is employed.
+    \end{problem}
+
+    \begin{solution}
+        $$ b > d > e >a > c >f $$
+    \end{solution}
+    
+    
+    \begin{problem}{(3)}
+        (a) About 51 percent of newborn children are boys.
+        (b) Exactly 51 percent of newborn children are boys.
+        (c) Some newborn children are boys.
+        (d) It is not true that all newborn children are not boys.
+        (e) Somewhere between one-fourth and three-fourths of all newborn children are boys.
+    \end{problem}
+
+    \begin{solution}
+        $$ b > a > e > c = d$$
+    \end{solution}
+
+\clearpage
+
+    \paragraph{II}
+    Arrange the following sets of argument forms in order from greatest to least inductive probability.
+    
+    \begin{problem}{(1)}
+        \begin{tabular}{l l}
+        (a) & 60 per cent of observed F are G. \\
+            & x is F.\\
+          $\therefore$ & x is G.\\
+        (b) & 20 per cent of F are G.\\
+            & x is F.\\
+            $\therefore$ &  x is G.\\
+        (c) & 60 per cent of F are G.\\
+            & x is F.\\
+            $\therefore$ & x is G.\\
+        \end{tabular}
+    \end{problem}
+
+    \begin{solution}
+        $$ c>a>b   $$
+    \end{solution}
+    
+    
+\begin{problem}{(3)}
+        \begin{tabular}{l l}
+            (a) & 8 of 10 doctors we asked prescribed product X.\\
+            $\therefore$ & About 80 percent of all doctors prescribe product X.\\
+            (b) & 80 of 100 doctors we asked prescribed product X.\\
+            $\therefore$ & About 80 percent of all doctors prescribe product X.\\
+            (c) & 80 of 100 randomly selected doctors prescribed product X.\\
+            $\therefore$ & About 80 percent of all doctors prescribe product X.\\
+            (d) &My doctor prescribes product X.\\
+            $\therefore$ &All doctors prescribe product X.\\
+            (e) & My doctor prescribes product X.\\
+            $\therefore$ & Some doctor(s) prescribe(s) product X.\\
+            (f) & All 10 doctors we asked prescribe product X.\\
+            $\therefore$ & All doctors prescribe product X. \\
+        \end{tabular}
+    \end{problem}
+
+    \begin{solution}
+        $$ e>c>b>a>f>d  $$
+    \end{solution}
+
+\clearpage
+
+    \paragraph{III}
+    Each of the following problems consists of a list of observations. For each, answer the following questions. Are the observations compatible with the assumption that exactly one cause of the type indicated (necessary, sufﬁcient, etc.) is among the suspected causes? If so, do the observations enable us to identify it using Mill’s methods? If they do, which of the unsuspected causes is it, and by what method is it identiﬁed?
+
+
+
+    \begin{problem}{(2)}
+        \begin{center}
+            \begin{tabular}{| l| l | l |}
+             \hline
+                 &  Circumstances (suspected & \\
+                Case & necessary causes of E) & Effect\\\hline
+                (a) &  F, G, H &  E \\
+                (b) &  G, H &  E \\
+                (c) & H, I & E \\ \hline
+            \end{tabular}
+        \end{center}
+      \end{problem}
+    
+    
+    \begin{solution}
+        By the Method of Agreement, H causes the effect E.
+    \end{solution}
+
+
+    \begin{problem}{(4)}
+       \begin{center}
+            \begin{tabular}{| l| l | l |}
+             \hline
+                 &  Circumstances (suspected & \\
+                Case & necessary causes of E) & Effect\\\hline
+                (a) &  F, G, H &  E \\
+                (b) &  F, G &  E \\
+                (c) & G, H & E \\
+                (d) & F, H & None \\ \hline
+            \end{tabular}
+        \end{center} 
+    \end{problem}    
+    
+    \begin{solution}
+       By the Method of Agreement, G causes the effect E.
+    \end{solution}
+    
+\clearpage
+
+    \begin{problem}{(5)}
+       \begin{center}
+            \begin{tabular}{| l| l | l |}
+             \hline
+                 &  Circumstances (suspected & \\
+                Case & sufficient causes of E) & Effect\\\hline
+                (a) &  F, G, H &  E \\
+                (b) &  F & E \\
+                (c) & H & None \\ \hline
+            \end{tabular}
+        \end{center} 
+    \end{problem}
+    
+    \begin{solution}
+        By the Method of Difference, F causes the effect E. 
+    \end{solution}
+    
+    
+    
+\end{document}
